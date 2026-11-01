@@ -479,3 +479,37 @@ def test_server_api_routes(tmp_path: Path):
     assert details["case_id"] == case_id
     assert details["status"] == "DRAFT"
     assert "epistemic_ledger" in details
+
+    # Dynamic create case
+    new_case_res = api.create_case(
+        "Dynamic Web Case", idea="Testing dynamic invention intake", confidential=True
+    )
+    assert new_case_res["success"] is True
+    dyn_id = new_case_res["case_id"]
+
+    # Ingest text dynamically
+    ingest_res = api.ingest_text(
+        dyn_id, "lab_notes.md", "Sensor test note\nline 2 reading 50Hz\nline 3 threshold 6dB"
+    )
+    assert ingest_res["success"] is True
+    assert ingest_res["locators_count"] == 3
+
+    # Add claim dynamically
+    claim_res = api.add_claim(
+        dyn_id,
+        claim="Dynamic sensor threshold is 6dB",
+        fact_type="SOURCE_BACKED",
+        source_id=ingest_res["source_id"],
+        locator="line:3",
+    )
+    assert claim_res["success"] is True
+    assert claim_res["claim"]["fact_type"] == "SOURCE_BACKED"
+    assert claim_res["ledger"]["counts"]["SOURCE_BACKED"] == 1
+
+    # Room feed & message
+    feed = api.get_room_feed(dyn_id)
+    assert len(feed) >= 5
+    post_res = api.post_room_message(dyn_id, "Can we test at 3.0 m/s?")
+    assert post_res["success"] is True
+    assert len(post_res["feed"]) > len(feed)
+    assert any("Can we test at 3.0 m/s?" in m["text"] for m in post_res["feed"])

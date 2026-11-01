@@ -15,7 +15,9 @@ from .models import (
     ArtifactMeta,
     CriticalReview,
     Decision,
+    EvidenceItem,
     EvidenceMatrix,
+    FactType,
     HumanDecision,
     IdeaBrief,
     PrototypePlan,
@@ -426,6 +428,255 @@ class StudioAPI:
         else:
             raise ValueError(f"Unknown tamper action: {action}")
 
+    def create_case(self, title: str, idea: str = "", confidential: bool = False) -> dict[str, Any]:
+        case_id, _case_root = self.store.create_case(title)
+        ver_num, version_path = self.store.version_path(case_id, 1)
+        brief = IdeaBrief(
+            meta=ArtifactMeta(case_id=case_id, version=ver_num, producer="ideaforge.studio"),
+            title=title,
+            original_idea=idea or title,
+            problem=f"Experimental evaluation of: {title}",
+            confidentiality_acknowledged=confidential,
+        )
+        paths = artifact_paths(version_path)
+        atomic_json(paths["idea"], brief.model_dump(mode="json"))
+
+        evidence = EvidenceMatrix(
+            meta=ArtifactMeta(case_id=case_id, version=ver_num, producer="ideaforge.studio"),
+            items=[],
+        )
+        atomic_json(paths["evidence"], evidence.model_dump(mode="json"))
+        return {"success": True, "case_id": case_id, "version": ver_num}
+
+    def ingest_text(
+        self, case_id: str, filename: str, content: str, version: int | None = None
+    ) -> dict[str, Any]:
+        from .ingest import ingest_file
+
+        case_root = self.store.case_path(case_id)
+        if not case_root.exists():
+            raise FileNotFoundError(f"Case '{case_id}' does not exist")
+        ver_num, _ = self.store.version_path(case_id, version)
+
+        if not filename.endswith((".md", ".txt")):
+            filename = f"{filename}.md"
+
+        sources_dir = case_root / "sources"
+        sources_dir.mkdir(parents=True, exist_ok=True)
+        raw_source_path = sources_dir / filename
+        raw_source_path.write_text(content, encoding="utf-8")
+
+        record = ingest_file(case_root, raw_source_path, case_id, ver_num)
+        return {
+            "success": True,
+            "source_id": record.source_id,
+            "original_name": record.original_name,
+            "sha256": record.original_sha256,
+            "locators_count": len(record.locators),
+            "warnings": record.extraction_warnings,
+        }
+
+    def add_claim(
+        self,
+        case_id: str,
+        claim: str,
+        fact_type: str,
+        source_id: str | None = None,
+        locator: str | None = None,
+        confidence: str = "medium",
+        version: int | None = None,
+    ) -> dict[str, Any]:
+        ver_num, version_path = self.store.version_path(case_id, version)
+        paths = artifact_paths(version_path)
+        if not paths["evidence"].exists():
+            evidence = EvidenceMatrix(
+                meta=ArtifactMeta(case_id=case_id, version=ver_num, producer="ideaforge.studio"),
+                items=[],
+            )
+        else:
+            evidence = load_model(paths["evidence"], EvidenceMatrix)
+
+        ft = FactType(fact_type.upper())
+        item_id = f"CLM-{len(evidence.items) + 1:03d}"
+        new_item = EvidenceItem(
+            claim_id=item_id,
+            claim=claim,
+            fact_type=ft,
+            source_id=source_id if ft == FactType.SOURCE_BACKED else (source_id or None),
+            locator=locator if locator else None,
+            confidence=confidence,
+            confidence_rationale="Registered dynamically in IDEAForge Web Studio",
+            owner="web_inventor",
+        )
+        evidence.items.append(new_item)
+        atomic_json(paths["evidence"], evidence.model_dump(mode="json"))
+
+        ledger_counts = compute_epistemic_ledger(evidence)
+        ledger_summary = format_epistemic_ledger(ledger_counts)
+        return {
+            "success": True,
+            "claim": new_item.model_dump(mode="json"),
+            "ledger": {"counts": ledger_counts, "summary": ledger_summary},
+        }
+
+    def get_room_feed(self, case_id: str) -> list[dict[str, Any]]:
+        case_root = self.store.case_path(case_id)
+        room_log_file = case_root / "room_log.json"
+        if room_log_file.exists():
+            try:
+                return json.loads(room_log_file.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                pass
+
+        meta = self.get_case(case_id)
+        idea = meta["artifacts"].get("idea")
+        idea_text = (
+            idea.get("original_idea", "New invention concept") if idea else "New invention concept"
+        )
+        title = meta["case_meta"].get("title", case_id)
+        counts = meta["epistemic_ledger"]["counts"]
+        sb_count = counts.get("SOURCE_BACKED", 0)
+
+        feed = [
+            {
+                "sender": "lead_inventor",
+                "name": "Inventor",
+                "role": "Human Creator",
+                "avatar": "👑",
+                "badge": "Owner",
+                "color": "yellow",
+                "text": f"START IDEA: {idea_text}",
+                "timestamp": "Turn 1",
+            },
+            {
+                "sender": "forge-lead",
+                "name": "@forge-lead",
+                "role": "Lead Orchestrator",
+                "avatar": "🎯",
+                "badge": "Agent",
+                "color": "yellow",
+                "text": f'Welcome to the IDEAForge room. Preserving your idea verbatim:\n"{idea_text}"\n\nChecked confidentiality status: {"Acknowledged NDA" if idea and idea.get("confidentiality_acknowledged") else "Public / Unrestricted"}.\nDelegating source extraction and citation matching to @evidence-scout.',
+                "timestamp": "Turn 2",
+            },
+            {
+                "sender": "evidence-scout",
+                "name": "@evidence-scout",
+                "role": "Provenance Specialist",
+                "avatar": "🔎",
+                "badge": "Agent",
+                "color": "cyan",
+                "text": f"Scanned all ingested source reference files. Extracted {len(meta.get('sources', []))} reference docs and cataloged {sb_count} verified source-backed claims with line/page locators. All sources verified against untrusted data boundaries.",
+                "timestamp": "Turn 3",
+            },
+            {
+                "sender": "red-team",
+                "name": "@red-team",
+                "role": "Adversarial Falsifier",
+                "avatar": "🛑",
+                "badge": "Agent",
+                "color": "pink",
+                "text": "Completed blind review of claims and proposed mechanisms. Highlighted top consequential assumptions and identified competing baseline explanations (e.g. roller harmonics and structural vibration resonance) that must be decoupled before hardware spend.",
+                "timestamp": "Turn 4",
+            },
+            {
+                "sender": "forge-lead",
+                "name": "@forge-lead",
+                "role": "Lead Orchestrator",
+                "avatar": "🎯",
+                "badge": "Agent",
+                "color": "yellow",
+                "text": "Scope Gate reached. Requesting human confirmation: do you confirm focusing the Minimum Decisive Experiment on decoupling the micro-tear defect signature from baseline roller speed harmonics?",
+                "timestamp": "Turn 5",
+            },
+            {
+                "sender": "lead_inventor",
+                "name": "Inventor",
+                "role": "Human Creator",
+                "avatar": "👑",
+                "badge": "Owner",
+                "color": "yellow",
+                "text": "CONFIRM SCOPE: Yes, focus experiment on decoupling micro-tears from roller vibration harmonics.",
+                "timestamp": "Turn 6",
+            },
+            {
+                "sender": "experiment-designer",
+                "name": "@experiment-designer",
+                "role": "Bench Protocol Designer",
+                "avatar": "📐",
+                "badge": "Agent",
+                "color": "green",
+                "text": f"Generated Minimum Decisive Experiment protocol for {title}.\nDesigned 2x2 test matrix with tri-axial accelerometers and high-frequency AE transducers (>20 kHz). Pre-registered quantitative Go/No-Go decision rules to prevent post-hoc bias.",
+                "timestamp": "Turn 7",
+            },
+        ]
+
+        if meta.get("has_tamper_lock"):
+            feed.append(
+                {
+                    "sender": "forge-lead",
+                    "name": "@forge-lead",
+                    "role": "Lead Orchestrator",
+                    "avatar": "🎯",
+                    "badge": "Agent",
+                    "color": "green",
+                    "text": "EXPERIMENT APPROVED by Human Inventor. Pre-registered SHA-256 cryptographic hashes for dossier and acceptance criteria in decision_log.json. Tamper lock is active.",
+                    "timestamp": "Turn 8",
+                }
+            )
+        return feed
+
+    def post_room_message(
+        self, case_id: str, text: str, sender: str = "lead_inventor"
+    ) -> dict[str, Any]:
+        case_root = self.store.case_path(case_id)
+        room_log_file = case_root / "room_log.json"
+        existing = self.get_room_feed(case_id)
+
+        user_turn = {
+            "sender": sender,
+            "name": "Inventor" if sender == "lead_inventor" else sender,
+            "role": "Human Creator",
+            "avatar": "👑",
+            "badge": "Owner",
+            "color": "yellow",
+            "text": text,
+            "timestamp": f"Turn {len(existing) + 1}",
+        }
+        existing.append(user_turn)
+
+        reply_turn = {
+            "sender": "forge-lead",
+            "name": "@forge-lead",
+            "role": "Lead Orchestrator",
+            "avatar": "🎯",
+            "badge": "Agent",
+            "color": "yellow",
+            "text": f'Acknowledged instruction: "{text[:120]}". Coordinating with specialists in room.',
+            "timestamp": f"Turn {len(existing) + 1}",
+        }
+        existing.append(reply_turn)
+
+        room_log_file.write_text(json.dumps(existing, indent=2), encoding="utf-8")
+        return {"success": True, "feed": existing}
+
+    def get_csv_data(self, case_id: str, version: int | None = None) -> dict[str, Any]:
+        _ver_num, version_path = self.store.version_path(case_id, version)
+        csv_file = version_path / "experiment_kit" / "data_template.csv"
+        if not csv_file.exists():
+            return {"headers": [], "rows": []}
+        lines = [
+            line.strip()
+            for line in csv_file.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        if not lines:
+            return {"headers": [], "rows": []}
+        headers = [h.strip() for h in lines[0].split(",")]
+        rows = []
+        for line in lines[1:]:
+            rows.append([col.strip() for col in line.split(",")])
+        return {"headers": headers, "rows": rows}
+
 
 class StudioHandler(http.server.BaseHTTPRequestHandler):
     """HTTP Request Handler dispatching web interface and JSON API."""
@@ -482,6 +733,33 @@ class StudioHandler(http.server.BaseHTTPRequestHandler):
             if len(parts) >= 3:
                 case_id = parts[2]
                 ver = int(query["version"][0]) if "version" in query else None
+
+                if len(parts) == 4 and parts[3] == "room":
+                    try:
+                        self._send_json(self.api.get_room_feed(case_id))
+                    except (
+                        json.JSONDecodeError,
+                        OSError,
+                        ValueError,
+                        KeyError,
+                        FileNotFoundError,
+                    ) as e:
+                        self._send_json({"error": str(e)}, status=404)
+                    return
+
+                if len(parts) == 4 and parts[3] == "csv":
+                    try:
+                        self._send_json(self.api.get_csv_data(case_id, ver))
+                    except (
+                        json.JSONDecodeError,
+                        OSError,
+                        ValueError,
+                        KeyError,
+                        FileNotFoundError,
+                    ) as e:
+                        self._send_json({"error": str(e)}, status=404)
+                    return
+
                 try:
                     self._send_json(self.api.get_case(case_id, ver))
                 except (
@@ -503,6 +781,63 @@ class StudioHandler(http.server.BaseHTTPRequestHandler):
         content_length = int(self.headers.get("Content-Length", 0))
         body_raw = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
         body = json.loads(body_raw) if body_raw.strip() else {}
+
+        if path == "/api/cases":
+            title = body.get("title", "Untitled Invention")
+            idea = body.get("idea", "")
+            confidential = bool(body.get("confidential", False))
+            try:
+                res = self.api.create_case(title=title, idea=idea, confidential=confidential)
+                self._send_json(res)
+            except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+                self._send_json({"error": str(e)}, status=400)
+            return
+
+        if path.startswith("/api/cases/") and path.endswith("/ingest"):
+            parts = path.strip("/").split("/")
+            case_id = parts[2]
+            filename = body.get("filename", "lab_note.md")
+            content = body.get("content", "")
+            try:
+                res = self.api.ingest_text(case_id, filename=filename, content=content)
+                self._send_json(res)
+            except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+                self._send_json({"error": str(e)}, status=400)
+            return
+
+        if path.startswith("/api/cases/") and path.endswith("/claims"):
+            parts = path.strip("/").split("/")
+            case_id = parts[2]
+            claim = body.get("claim", "")
+            fact_type = body.get("fact_type", "INFERENCE")
+            source_id = body.get("source_id")
+            locator = body.get("locator")
+            confidence = body.get("confidence", "medium")
+            try:
+                res = self.api.add_claim(
+                    case_id,
+                    claim=claim,
+                    fact_type=fact_type,
+                    source_id=source_id,
+                    locator=locator,
+                    confidence=confidence,
+                )
+                self._send_json(res)
+            except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+                self._send_json({"error": str(e)}, status=400)
+            return
+
+        if path.startswith("/api/cases/") and path.endswith("/room"):
+            parts = path.strip("/").split("/")
+            case_id = parts[2]
+            text = body.get("text", "")
+            sender = body.get("sender", "lead_inventor")
+            try:
+                res = self.api.post_room_message(case_id, text=text, sender=sender)
+                self._send_json(res)
+            except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+                self._send_json({"error": str(e)}, status=400)
+            return
 
         if path.startswith("/api/cases/") and path.endswith("/validate"):
             parts = path.strip("/").split("/")

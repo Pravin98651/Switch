@@ -172,7 +172,7 @@ Benchtop conveyor testbed with 1.2 m synthetic belt loop, brushless DC motor, pi
 
 ## 18. Human decisions and approval log (Pillar E)
 
-- **2026-11-01T19:49:57.526571+00:00** — Actor: `lead_inventor` | Decision: `APPROVE_EXPERIMENT` | Statement: Risks acceptable for benchtop test rig; acceptance criteria locked at 6dB harmonic threshold.
+- **2026-11-01T19:58:41.346128+00:00** — Actor: `lead_inventor` | Decision: `APPROVE_EXPERIMENT` | Statement: Risks acceptable for benchtop test rig; acceptance criteria locked at 6dB harmonic threshold.
 
 ## 19. Next recommended experiment
 
