@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "case_id": "IF-DEMO-001",
+    "version": 1,
+    "producer": "forge-lead",
+    "created_at": "2026-11-02T00:00:00Z",
+    "status": "draft",
+    "input_hashes": []
+  },
+  "title": "Conveyor belt early micro-tear defect detection",
+  "original_idea": "Explore whether a combination of vibration and acoustic measurements can help identify an early mechanical defect in a conveyor-belt test setup before visible tear occurs.",
+  "problem": "Early mechanical degradation and micro-tears in moving conveyor belts are visually imperceptible until catastrophic tearing occurs.",
+  "target_user": "Industrial maintenance engineers and maker testbed operators.",
+  "environment": "Benchtop conveyor test rig with acoustic motor noise and roller vibration.",
+  "mechanism": "Localized micro-defects generate high-frequency acoustic emission bursts (>20 kHz) and transient vibration spikes when passing over rollers.",
+  "outcome": "A reproducible detection threshold that distinguishes defect-induced signals from normal roller speed variations.",
+  "constraints": [
+    "Benchtop apparatus only (1.2m loop)",
+    "Non-destructive artificial defect only",
+    "Maximum speed 2.5 m/s",
+    "Low-cost sensors and DAQ"
+  ],
+  "known_unknowns": [
+    "Whether acoustic burst amplitude is overwhelmed by motor bearing noise",
+    "Whether vibration spikes vary primarily with roller RPM rather than defect presence"
+  ],
+  "system_boundary": "Benchtop conveyor rig, accelerometer, contact acoustic sensor, and data logging DAQ.",
+  "clarifying_questions": [
+    "What is the maximum operating speed intended for the first test?",
+    "Is sensor mounting constrained to idler roller bearings?"
+  ],
+  "updated_at": "2026-11-02T00:00:00Z"
+}

@@ -1,0 +1,113 @@
+{
+  "$defs": {
+    "FactType": {
+      "enum": [
+        "SOURCE_BACKED",
+        "USER_PROVIDED",
+        "INFERENCE",
+        "ASSUMPTION",
+        "HYPOTHESIS",
+        "UNKNOWN"
+      ],
+      "title": "FactType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    },
+    "classification": {
+      "$ref": "#/$defs/FactType"
+    },
+    "source_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Id"
+    },
+    "supporting_item_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supporting Item Ids",
+      "type": "array"
+    },
+    "locator": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Locator"
+    },
+    "supporting_excerpt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supporting Excerpt"
+    },
+    "interpretation": {
+      "default": "",
+      "title": "Interpretation",
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "created_by": {
+      "default": "unknown",
+      "title": "Created By",
+      "type": "string"
+    },
+    "status": {
+      "default": "unreviewed",
+      "title": "Status",
+      "type": "string"
+    },
+    "confidence_rationale": {
+      "default": "",
+      "title": "Confidence Rationale",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "statement",
+    "classification"
+  ],
+  "title": "ClaimRecord",
+  "type": "object"
+}

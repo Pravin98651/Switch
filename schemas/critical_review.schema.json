@@ -1,0 +1,127 @@
+{
+  "$defs": {
+    "ArtifactMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CaseStatus",
+          "default": "draft"
+        },
+        "input_hashes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "version",
+        "producer"
+      ],
+      "title": "ArtifactMeta",
+      "type": "object"
+    },
+    "CaseStatus": {
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "CaseStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/ArtifactMeta"
+    },
+    "failure_modes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Failure Modes",
+      "type": "array"
+    },
+    "alternative_mechanisms": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Alternative Mechanisms",
+      "type": "array"
+    },
+    "consequential_assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Consequential Assumptions",
+      "type": "array"
+    },
+    "confounding_variables": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Confounding Variables",
+      "type": "array"
+    },
+    "measurement_limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Measurement Limitations",
+      "type": "array"
+    },
+    "failure_conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Failure Conditions",
+      "type": "array"
+    },
+    "evidence_that_would_change_assessment": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence That Would Change Assessment",
+      "type": "array"
+    },
+    "practical_tests": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Practical Tests",
+      "type": "array"
+    },
+    "unresolved_questions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Questions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "meta"
+  ],
+  "title": "CriticalReview",
+  "type": "object"
+}

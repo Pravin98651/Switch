@@ -1,0 +1,194 @@
+{
+  "$defs": {
+    "ArtifactMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CaseStatus",
+          "default": "draft"
+        },
+        "input_hashes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "version",
+        "producer"
+      ],
+      "title": "ArtifactMeta",
+      "type": "object"
+    },
+    "BomItem": {
+      "additionalProperties": false,
+      "properties": {
+        "item": {
+          "title": "Item",
+          "type": "string"
+        },
+        "quantity": {
+          "minimum": 1,
+          "title": "Quantity",
+          "type": "integer"
+        },
+        "purpose": {
+          "title": "Purpose",
+          "type": "string"
+        },
+        "specification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Specification"
+        },
+        "estimate_source": {
+          "default": "ASSUMPTION",
+          "title": "Estimate Source",
+          "type": "string"
+        },
+        "confidence": {
+          "default": "low",
+          "title": "Confidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item",
+        "quantity",
+        "purpose"
+      ],
+      "title": "BomItem",
+      "type": "object"
+    },
+    "CaseStatus": {
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "CaseStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/ArtifactMeta"
+    },
+    "architecture": {
+      "title": "Architecture",
+      "type": "string"
+    },
+    "hypothesis": {
+      "title": "Hypothesis",
+      "type": "string"
+    },
+    "independent_variables": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Independent Variables",
+      "type": "array"
+    },
+    "dependent_variables": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Dependent Variables",
+      "type": "array"
+    },
+    "controlled_variables": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Controlled Variables",
+      "type": "array"
+    },
+    "equipment": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Equipment",
+      "type": "array"
+    },
+    "calibration": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Calibration",
+      "type": "array"
+    },
+    "protocol": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Protocol",
+      "type": "array"
+    },
+    "measurement_plan": {
+      "default": "",
+      "title": "Measurement Plan",
+      "type": "string"
+    },
+    "sample_size_rationale": {
+      "default": "Proposal; not evidence-backed.",
+      "title": "Sample Size Rationale",
+      "type": "string"
+    },
+    "acceptance_criteria": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Acceptance Criteria",
+      "type": "array"
+    },
+    "safety": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Safety",
+      "type": "array"
+    },
+    "bom": {
+      "items": {
+        "$ref": "#/$defs/BomItem"
+      },
+      "title": "Bom",
+      "type": "array"
+    }
+  },
+  "required": [
+    "meta",
+    "architecture",
+    "hypothesis"
+  ],
+  "title": "PrototypePlan",
+  "type": "object"
+}

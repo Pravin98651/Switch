@@ -1,0 +1,194 @@
+{
+  "$defs": {
+    "ArtifactMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CaseStatus",
+          "default": "draft"
+        },
+        "input_hashes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "version",
+        "producer"
+      ],
+      "title": "ArtifactMeta",
+      "type": "object"
+    },
+    "CaseStatus": {
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "CaseStatus",
+      "type": "string"
+    },
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Claim Id"
+        },
+        "claim": {
+          "minLength": 1,
+          "title": "Claim",
+          "type": "string"
+        },
+        "fact_type": {
+          "$ref": "#/$defs/FactType"
+        },
+        "source_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Id"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        },
+        "confidence": {
+          "default": "low",
+          "title": "Confidence",
+          "type": "string"
+        },
+        "confidence_rationale": {
+          "default": "Not provided.",
+          "title": "Confidence Rationale",
+          "type": "string"
+        },
+        "owner": {
+          "default": "unknown",
+          "title": "Owner",
+          "type": "string"
+        },
+        "status": {
+          "default": "unreviewed",
+          "title": "Status",
+          "type": "string"
+        },
+        "supporting_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Item Ids",
+          "type": "array"
+        },
+        "supporting_excerpt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supporting Excerpt"
+        },
+        "interpretation": {
+          "default": "",
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim",
+        "fact_type"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "FactType": {
+      "enum": [
+        "SOURCE_BACKED",
+        "USER_PROVIDED",
+        "INFERENCE",
+        "ASSUMPTION",
+        "HYPOTHESIS",
+        "UNKNOWN"
+      ],
+      "title": "FactType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/ArtifactMeta"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/EvidenceItem"
+      },
+      "title": "Items",
+      "type": "array"
+    }
+  },
+  "required": [
+    "meta"
+  ],
+  "title": "EvidenceMatrix",
+  "type": "object"
+}

@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "case_id": "IF-DEMO-001",
+    "version": 1,
+    "producer": "red-team",
+    "created_at": "2026-11-02T00:00:00Z",
+    "status": "draft",
+    "input_hashes": []
+  },
+  "failure_modes": [
+    "Acoustic burst signal is completely masked by drive motor PWM electrical noise and bearing friction.",
+    "Sensor mounting compliance dampens ultrasonic frequencies above 20 kHz.",
+    "False alarms triggered by normal belt seam or splice pass rather than a defect."
+  ],
+  "alternative_mechanisms": [
+    "Vibration amplitude increase is driven strictly by roller eccentricity and motor RPM rather than belt defect.",
+    "Acoustic emissions are caused by belt slip on drive roller under varying tension, not defect micro-cracking."
+  ],
+  "consequential_assumptions": [
+    "Assumption 1: Artificial surface defect generates a distinct acoustic burst distinguishable from motor bearing hum.",
+    "Assumption 2: Belt tension remains constant across speed variations.",
+    "Assumption 3: Accelerometer mounting housing provides rigid mechanical coupling up to 10 kHz."
+  ],
+  "confounding_variables": [
+    "Belt operating speed (0.5 m/s vs 2.0 m/s alters passing frequency and background noise).",
+    "Ambient room acoustic noise and benchtop structural resonance.",
+    "Sensor contact pressure and couplant dry-out over time."
+  ],
+  "measurement_limitations": [
+    "DAQ sampling rate must sustain 200 kS/s to prevent aliasing of 100 kHz signals.",
+    "Accelerometers mounted on external bearing blocks suffer mechanical low-pass filtering through the housing."
+  ],
+  "failure_conditions": [
+    "Belt speeds below 0.3 m/s generate insufficient strain energy to trigger acoustic emissions.",
+    "Operation in dusty or contaminated environments dampens acoustic contact."
+  ],
+  "evidence_that_would_change_assessment": [
+    "A controlled 2x2 comparison (Baseline vs Defect at 1.0 m/s and 2.0 m/s) where periodic bursts synchronize with belt circulation period only when the defect is installed."
+  ],
+  "practical_tests": [
+    "Run benchtop conveyor at 1.0 m/s and 2.0 m/s without defect; verify baseline noise floor.",
+    "Install artificial defect clip; measure whether acoustic burst amplitude exceeds baseline by >6 dB with periodicity T = 1.2m / V."
+  ],
+  "unresolved_questions": [
+    "Can the experiment isolate belt defect bursts from drive roller bearing harmonics without narrow bandpass filtering?",
+    "What minimum defect dimension generates a detectable signal above the motor noise floor?"
+  ]
+}

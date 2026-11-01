@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "case_id": "IF-DEMO-001",
+    "version": 1,
+    "producer": "evidence-scout",
+    "created_at": "2026-11-02T00:00:00Z",
+    "status": "draft",
+    "input_hashes": []
+  },
+  "items": [
+    {
+      "claim_id": "CLM-001",
+      "claim": "Acoustic emission sensor frequency band covers 20 kHz to 100 kHz for ultrasonic contact detection.",
+      "fact_type": "SOURCE_BACKED",
+      "source_id": "SRC-DA8D5C538812",
+      "locator": "line:7",
+      "confidence": "high",
+      "confidence_rationale": "Directly stated in sensor specification document.",
+      "owner": "evidence-scout",
+      "status": "verified",
+      "supporting_item_ids": [],
+      "supporting_excerpt": "Frequency band: 20 kHz to 100 kHz (ultrasonic contact sensor).",
+      "interpretation": "High-pass filtering at 15 kHz attenuates ambient motor hum.",
+      "limitations": ["Contact couplant pressure must be strictly maintained."],
+      "created_at": "2026-11-02T00:00:00Z"
+    },
+    {
+      "claim_id": "CLM-002",
+      "claim": "Accelerometer stud torque must be calibrated to 2.5 Nm (+/- 0.2 Nm).",
+      "fact_type": "SOURCE_BACKED",
+      "source_id": "SRC-A9FF21CAB49C",
+      "locator": "line:3",
+      "confidence": "high",
+      "confidence_rationale": "Calibrated torque specification from fault injection reference.",
+      "owner": "evidence-scout",
+      "status": "verified",
+      "supporting_item_ids": [],
+      "supporting_excerpt": "Accelerometer stud torque must be calibrated to 2.5 Nm.",
+      "interpretation": "Mounting compliance changes high-frequency vibration transmission.",
+      "limitations": ["Requires calibrated torque wrench."],
+      "created_at": "2026-11-02T00:00:00Z"
+    },
+    {
+      "claim_id": "CLM-003",
+      "claim": "Defect-induced stress concentration produces transient acoustic burst on every roller pass.",
+      "fact_type": "HYPOTHESIS",
+      "source_id": null,
+      "locator": null,
+      "confidence": "medium",
+      "confidence_rationale": "Physical hypothesis to be falsified or supported by the minimum decisive experiment.",
+      "owner": "evidence-scout",
+      "status": "pending_test",
+      "supporting_item_ids": ["CLM-001"],
+      "supporting_excerpt": null,
+      "interpretation": "Burst periodicity should match belt circulation period (T = L / V).",
+      "limitations": ["At low speeds, burst energy may be below sensor threshold."],
+      "created_at": "2026-11-02T00:00:00Z"
+    }
+  ]
+}

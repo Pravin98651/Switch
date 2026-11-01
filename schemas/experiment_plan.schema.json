@@ -1,0 +1,211 @@
+{
+  "$defs": {
+    "DecisionCriteria": {
+      "additionalProperties": false,
+      "properties": {
+        "supports": {
+          "minLength": 1,
+          "title": "Supports",
+          "type": "string"
+        },
+        "weakens": {
+          "minLength": 1,
+          "title": "Weakens",
+          "type": "string"
+        },
+        "inconclusive": {
+          "minLength": 1,
+          "title": "Inconclusive",
+          "type": "string"
+        }
+      },
+      "required": [
+        "supports",
+        "weakens",
+        "inconclusive"
+      ],
+      "title": "DecisionCriteria",
+      "type": "object"
+    },
+    "ExperimentType": {
+      "enum": [
+        "MINIMUM_DECISIVE",
+        "PRELIMINARY_SCREENING"
+      ],
+      "title": "ExperimentType",
+      "type": "string"
+    },
+    "MeasuredVariable": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "unit": {
+          "description": "Use 'unitless' when appropriate.",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "unit"
+      ],
+      "title": "MeasuredVariable",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "experiment_id": {
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "experiment_type": {
+      "$ref": "#/$defs/ExperimentType"
+    },
+    "hypothesis": {
+      "title": "Hypothesis",
+      "type": "string"
+    },
+    "alternative_explanation": {
+      "title": "Alternative Explanation",
+      "type": "string"
+    },
+    "independent_variables": {
+      "items": {
+        "$ref": "#/$defs/MeasuredVariable"
+      },
+      "minItems": 1,
+      "title": "Independent Variables",
+      "type": "array"
+    },
+    "dependent_variables": {
+      "items": {
+        "$ref": "#/$defs/MeasuredVariable"
+      },
+      "minItems": 1,
+      "title": "Dependent Variables",
+      "type": "array"
+    },
+    "control_variables": {
+      "items": {
+        "$ref": "#/$defs/MeasuredVariable"
+      },
+      "minItems": 1,
+      "title": "Control Variables",
+      "type": "array"
+    },
+    "equipment": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Equipment",
+      "type": "array"
+    },
+    "calibration_steps": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Calibration Steps",
+      "type": "array"
+    },
+    "procedure": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Procedure",
+      "type": "array"
+    },
+    "data_schema": {
+      "items": {
+        "$ref": "#/$defs/MeasuredVariable"
+      },
+      "minItems": 1,
+      "title": "Data Schema",
+      "type": "array"
+    },
+    "analysis_method": {
+      "title": "Analysis Method",
+      "type": "string"
+    },
+    "criteria": {
+      "$ref": "#/$defs/DecisionCriteria"
+    },
+    "safety_notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Safety Notes",
+      "type": "array"
+    },
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "mde_rationale": {
+      "default": "",
+      "title": "Mde Rationale",
+      "type": "string"
+    },
+    "human_status": {
+      "default": "DRAFT",
+      "title": "Human Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "case_id",
+    "version",
+    "title",
+    "experiment_type",
+    "hypothesis",
+    "alternative_explanation",
+    "independent_variables",
+    "dependent_variables",
+    "control_variables",
+    "equipment",
+    "calibration_steps",
+    "procedure",
+    "data_schema",
+    "analysis_method",
+    "criteria"
+  ],
+  "title": "ExperimentPlan",
+  "type": "object"
+}

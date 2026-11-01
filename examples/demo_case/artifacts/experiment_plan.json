@@ -1,0 +1,113 @@
+{
+  "experiment_id": "EXP-CONVEYOR-001",
+  "case_id": "IF-DEMO-001",
+  "version": 1,
+  "title": "Conveyor Defect Acoustic Emission vs Roller Speed Discriminative Test",
+  "experiment_type": "MINIMUM_DECISIVE",
+  "mde_rationale": "By running a 2x2 matrix (baseline vs defect across two distinct belt speeds of 1.0 m/s and 2.0 m/s), this experiment decouples speed-dependent roller harmonic vibration from defect-induced acoustic emission bursts which must synchronize with the known belt loop circulation time (T = 1.2m / V).",
+  "hypothesis": "An artificial surface defect generates localized ultrasonic acoustic bursts (>25 kHz) synchronized with belt circulation frequency, distinguishable from roller speed-dependent baseline noise.",
+  "alternative_explanation": "Measured signal elevation is solely due to roller eccentricity harmonics and motor bearing noise scaling with operating RPM.",
+  "independent_variables": [
+    {
+      "name": "defect_present",
+      "unit": "boolean",
+      "required": true
+    },
+    {
+      "name": "belt_speed",
+      "unit": "m/s",
+      "required": true
+    }
+  ],
+  "dependent_variables": [
+    {
+      "name": "acoustic_peak_amplitude",
+      "unit": "mV",
+      "required": true
+    },
+    {
+      "name": "burst_periodicity",
+      "unit": "s",
+      "required": true
+    },
+    {
+      "name": "vibration_rms",
+      "unit": "m/s^2",
+      "required": true
+    }
+  ],
+  "control_variables": [
+    {
+      "name": "belt_tension",
+      "unit": "N",
+      "required": true
+    },
+    {
+      "name": "sensor_mounting_torque",
+      "unit": "Nm",
+      "required": true
+    },
+    {
+      "name": "acoustic_sensor_clamp_force",
+      "unit": "N",
+      "required": true
+    }
+  ],
+  "equipment": [
+    "1.2 m benchtop conveyor testbed with PWM speed controller",
+    "Ultrasonic contact acoustic emission sensor (20-100 kHz)",
+    "Piezoelectric accelerometer (100 mV/g)",
+    "USB DAQ (250 kS/s sampling rate)",
+    "Artificial surface defect clip fixture (1 mm notch)"
+  ],
+  "calibration_steps": [
+    "1. Record stationary 0 m/s electrical noise floor for 10 seconds.",
+    "2. Verify accelerometer mounting stud torque with calibrated wrench at 2.5 Nm.",
+    "3. Apply acoustic couplant and calibrate clamp force to 5.0 N using force gauge."
+  ],
+  "procedure": [
+    "1. Run 30-second baseline recording at 1.0 m/s with no defect.",
+    "2. Run 30-second baseline recording at 2.0 m/s with no defect.",
+    "3. Stop conveyor and securely mount 1 mm artificial defect clip.",
+    "4. Run 30-second defect recording at 1.0 m/s.",
+    "5. Run 30-second defect recording at 2.0 m/s.",
+    "6. Save observation data to data_template.csv and execute analysis.py."
+  ],
+  "data_schema": [
+    {
+      "name": "acoustic_peak_amplitude",
+      "unit": "mV",
+      "required": true
+    },
+    {
+      "name": "burst_periodicity",
+      "unit": "s",
+      "required": true
+    },
+    {
+      "name": "vibration_rms",
+      "unit": "m/s^2",
+      "required": true
+    }
+  ],
+  "analysis_method": "Exploratory descriptive comparison of acoustic peak amplitude and burst periodicity across baseline and defect states at both speeds.",
+  "criteria": {
+    "supports": "Acoustic peak amplitude in defect condition exceeds baseline by >=6 dB and burst periodicity matches T = 1.2m / V (1.20s at 1.0 m/s and 0.60s at 2.0 m/s).",
+    "weakens": "Acoustic peak amplitude does not exceed baseline noise floor, or scales solely with speed without periodicity matching belt circulation.",
+    "inconclusive": "Signal-to-noise ratio is below 6 dB or sensor mounting slips during run."
+  },
+  "safety_notes": [
+    "Operator must maintain safe distance from rotating rollers.",
+    "Emergency stop button within arm reach.",
+    "Benchtop acrylic shield closed during operation."
+  ],
+  "assumptions": [
+    "Artificial defect creates mechanical disturbance comparable to early fatigue micro-crack.",
+    "Silicone acoustic couplant remains stable over the 10-minute test sequence."
+  ],
+  "limitations": [
+    "Laboratory benchtop results with artificial defect do not represent full multi-month abrasive wear.",
+    "High ambient factory noise may require active filtering beyond this screening test."
+  ],
+  "human_status": "DRAFT"
+}

@@ -1,0 +1,15 @@
+{
+  "workspace": "workspace",
+  "case_prefix": "IF",
+  "case_date_format": "%Y%m%d",
+  "case_sequence_width": 3,
+  "version_prefix": "v",
+  "version_width": 3,
+  "max_source_bytes": 26214400,
+  "allowed_extensions": {
+    ".txt": "text/plain",
+    ".md": "text/markdown",
+    ".pdf": "application/pdf",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "$defs": {
+    "ArtifactMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CaseStatus",
+          "default": "draft"
+        },
+        "input_hashes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "version",
+        "producer"
+      ],
+      "title": "ArtifactMeta",
+      "type": "object"
+    },
+    "CaseStatus": {
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "CaseStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/ArtifactMeta"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "original_idea": {
+      "minLength": 1,
+      "title": "Original Idea",
+      "type": "string"
+    },
+    "problem": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Problem"
+    },
+    "target_user": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Target User"
+    },
+    "environment": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Environment"
+    },
+    "mechanism": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mechanism"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outcome"
+    },
+    "constraints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Constraints",
+      "type": "array"
+    },
+    "known_unknowns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Unknowns",
+      "type": "array"
+    },
+    "system_boundary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "System Boundary"
+    },
+    "clarifying_questions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Clarifying Questions",
+      "type": "array"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "meta",
+    "title",
+    "original_idea"
+  ],
+  "title": "IdeaBrief",
+  "type": "object"
+}

@@ -1,0 +1,160 @@
+{
+  "$defs": {
+    "ArtifactMeta": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/CaseStatus",
+          "default": "draft"
+        },
+        "input_hashes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Input Hashes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "version",
+        "producer"
+      ],
+      "title": "ArtifactMeta",
+      "type": "object"
+    },
+    "CaseStatus": {
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "CaseStatus",
+      "type": "string"
+    },
+    "SourceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "original_name": {
+          "title": "Original Name",
+          "type": "string"
+        },
+        "media_type": {
+          "title": "Media Type",
+          "type": "string"
+        },
+        "original_sha256": {
+          "title": "Original Sha256",
+          "type": "string"
+        },
+        "extracted_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extracted Sha256"
+        },
+        "extraction_status": {
+          "title": "Extraction Status",
+          "type": "string"
+        },
+        "locators": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Locators",
+          "type": "array"
+        },
+        "extracted_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extracted Path"
+        },
+        "page_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Count"
+        },
+        "extraction_warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Extraction Warnings",
+          "type": "array"
+        },
+        "ingested_at": {
+          "format": "date-time",
+          "title": "Ingested At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "original_name",
+        "media_type",
+        "original_sha256",
+        "extraction_status"
+      ],
+      "title": "SourceRecord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/ArtifactMeta"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceRecord"
+      },
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "meta"
+  ],
+  "title": "SourceManifest",
+  "type": "object"
+}
