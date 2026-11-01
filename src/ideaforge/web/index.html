@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IDEAForge 2.0 — Human-Led Invention Experiment Studio</title>
+  <title>IDEAForge 2.0 — Neobrutalist Invention Experiment Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#f0fdf4',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857'
+            neo: {
+              yellow: '#FFE600',
+              green: '#4ADE80',
+              blue: '#38BDF8',
+              pink: '#FF6B8B',
+              purple: '#C084FC',
+              orange: '#FB923C',
+              bg: '#FAF8F5',
+              card: '#FFFFFF',
+              dark: '#000000'
             }
           }
         }
@@ -23,53 +27,138 @@
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
+    
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #FAF8F5;
+      background-image: radial-gradient(#000000 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      color: #000000;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* NEOBRUTALISM CORE UTILITIES */
+    .neo-box {
+      background-color: #FFFFFF;
+      border: 3px solid #000000;
+      box-shadow: 5px 5px 0px #000000;
+      border-radius: 8px;
+    }
+    .neo-box-sm {
+      background-color: #FFFFFF;
+      border: 2.5px solid #000000;
+      box-shadow: 3px 3px 0px #000000;
+      border-radius: 6px;
+    }
+    .neo-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2.5px solid #000000;
+      box-shadow: 3px 3px 0px #000000;
+      font-weight: 800;
+      border-radius: 6px;
+      transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      user-select: none;
+    }
+    .neo-btn:hover:not(:disabled) {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px #000000;
+    }
+    .neo-btn:active:not(:disabled) {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000000;
+    }
+    .neo-badge {
+      display: inline-flex;
+      align-items: center;
+      border: 2px solid #000000;
+      box-shadow: 2px 2px 0px #000000;
+      font-weight: 800;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .neo-tab-btn {
+      border: 2.5px solid #000000;
+      box-shadow: 3px 3px 0px #000000;
+      font-weight: 800;
+      border-radius: 8px 8px 0px 0px;
+      transition: all 0.12s ease;
+      cursor: pointer;
+      background: #FFFFFF;
+      color: #000000;
+    }
+    .neo-tab-btn.active {
+      background-color: #FFE600 !important;
+      color: #000000 !important;
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0px #000000;
+      border-bottom-color: #FFE600;
+    }
+    .neo-input {
+      border: 2.5px solid #000000;
+      box-shadow: 3px 3px 0px #000000;
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .neo-input:focus {
+      outline: none;
+      box-shadow: 5px 5px 0px #000000;
+      transform: translate(-1px, -1px);
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #FAF8F5; border: 2px solid #000000; }
+    ::-webkit-scrollbar-thumb { background: #FFE600; border: 2px solid #000000; }
   </style>
 </head>
-<body class="bg-[#090d16] text-slate-100 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#FFE600] selection:text-black">
 
   <!-- TOP APP BAR -->
-  <header class="border-b border-slate-800 bg-[#0c1220]/90 backdrop-blur sticky top-0 z-50">
+  <header class="border-b-[3px] border-black bg-white sticky top-0 z-50 shadow-[0_4px_0px_#000000]">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- LOGO & BRAND -->
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg">
+        <div class="w-10 h-10 rounded-lg bg-[#FFE600] border-[2.5px] border-black shadow-[3px_3px_0px_#000000] flex items-center justify-center font-black text-xl text-black">
           IF
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-base font-bold tracking-tight text-white">IDEAForge 2.0</h1>
-            <span class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Studio</span>
+            <h1 class="text-lg font-black tracking-tight text-black uppercase">IDEAForge 2.0</h1>
+            <span class="neo-badge bg-[#4ADE80] text-black text-[10px] px-2 py-0.5">Studio</span>
+            <span class="neo-badge bg-[#38BDF8] text-black text-[10px] px-2 py-0.5 hidden sm:inline-flex">Track 02</span>
           </div>
-          <p class="text-xs text-slate-400">Falsify Before You Fabricate &bull; Track 02</p>
+          <p class="text-xs font-bold text-gray-700">Falsify Before You Fabricate &bull; Switch Multi-Agent Lab</p>
         </div>
       </div>
 
       <!-- CASE SELECTOR & LIVE BADGES -->
-      <div class="flex items-center gap-3">
-        <div class="flex items-center bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1">
-          <span class="text-xs text-slate-400 mr-2">Case:</span>
-          <select id="case-select" onchange="loadSelectedCase()" class="bg-transparent text-xs font-mono font-medium text-emerald-400 focus:outline-none cursor-pointer">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center bg-[#FAF8F5] border-[2.5px] border-black shadow-[3px_3px_0px_#000000] rounded-lg px-3 py-1.5">
+          <span class="text-xs font-black uppercase text-black mr-2">Case:</span>
+          <select id="case-select" onchange="loadSelectedCase()" class="bg-transparent text-xs font-mono font-bold text-black focus:outline-none cursor-pointer">
             <option value="">Loading cases...</option>
           </select>
         </div>
 
-        <div id="status-badge" class="text-xs font-semibold px-2.5 py-1 rounded-full border bg-slate-800 text-slate-300 border-slate-700">
+        <div id="status-badge" class="neo-badge bg-[#FFE600] text-black text-xs px-3 py-1.5">
           Loading
         </div>
 
-        <div id="tamper-badge" class="hidden text-xs font-semibold px-2.5 py-1 rounded-full border bg-emerald-950/80 text-emerald-400 border-emerald-600/40 flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        <div id="tamper-badge" class="hidden neo-badge bg-[#4ADE80] text-black text-xs px-3 py-1.5 flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           SHA-256 Locked
         </div>
 
-        <button onclick="runLiveDemo()" id="demo-btn" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center gap-1.5 shadow-sm shadow-emerald-950">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Run Live Demo
+        <button onclick="runLiveDemo()" id="demo-btn" class="neo-btn bg-[#FFE600] text-black text-xs px-3.5 py-2 flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Run Live Demo</span>
         </button>
       </div>
     </div>
@@ -78,81 +167,87 @@
   <!-- MAIN CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full flex flex-col gap-6">
 
-    <!-- HERO CASE BRIEF CARD -->
-    <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-1 flex-1">
-          <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <span id="case-id-display">IF-XXXXXXXX-XXX</span>
-            <span>&bull;</span>
-            <span id="case-version-display">v001</span>
-            <span>&bull;</span>
-            <span id="confidential-pill" class="text-slate-400">Unrestricted</span>
+    <!-- HERO CASE BRIEF CARD (NEOBRUTALIST STYLE) -->
+    <div class="neo-box p-6 bg-white relative overflow-hidden">
+      <!-- Decorative corner pill -->
+      <div class="absolute -right-12 -top-8 bg-[#FFE600] border-[2px] border-black w-32 h-16 rotate-12 flex items-end justify-center pb-1 text-[10px] font-black uppercase tracking-wider">
+        Active
+      </div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2 flex-1">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-mono font-bold">
+            <span id="case-id-display" class="neo-badge bg-[#E0E7FF] text-black px-2 py-0.5">IF-XXXXXXXX-XXX</span>
+            <span id="case-version-display" class="neo-badge bg-[#FEE2E2] text-black px-2 py-0.5">v001</span>
+            <span id="confidential-pill" class="neo-badge bg-[#FEF08A] text-black px-2 py-0.5">Public / Unrestricted</span>
           </div>
-          <h2 id="case-title" class="text-xl font-bold text-white tracking-tight">Loading Case Title...</h2>
-          <p id="original-idea-text" class="text-sm text-slate-300 italic max-w-4xl line-clamp-2">"Original inventor brief loading..."</p>
+          <h2 id="case-title" class="text-2xl font-black text-black tracking-tight">Loading Case Title...</h2>
+          <div class="p-3 bg-[#FAF8F5] border-[2px] border-black rounded-lg">
+            <span class="text-[11px] font-black uppercase tracking-wider text-gray-500 block mb-0.5">Original Inventor Brief:</span>
+            <p id="original-idea-text" class="text-xs text-gray-900 font-mono font-bold leading-relaxed">"Original inventor brief loading..."</p>
+          </div>
         </div>
 
         <!-- QUICK ACTION CONTROLS -->
-        <div class="flex items-center gap-2 self-start md:self-auto">
-          <button onclick="triggerValidate()" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Validate
+        <div class="flex flex-wrap items-center gap-3 self-start lg:self-center">
+          <button onclick="triggerValidate()" class="neo-btn bg-[#38BDF8] text-black text-xs px-4 py-2.5 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Validate Case
           </button>
-          <button onclick="openApprovalModal()" class="px-3 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 text-xs font-semibold transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          <button onclick="openApprovalModal()" class="neo-btn bg-[#4ADE80] text-black text-xs px-4 py-2.5 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
             Approve Gate
           </button>
         </div>
       </div>
 
       <!-- EPISTEMIC LEDGER BREAKDOWN BAR -->
-      <div class="mt-5 pt-4 border-t border-slate-800/80">
-        <div class="flex items-center justify-between text-xs mb-2">
-          <span class="font-semibold text-slate-300 flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <div class="mt-6 pt-5 border-t-[2.5px] border-black">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs mb-2.5">
+          <span class="font-black text-black uppercase tracking-wider flex items-center gap-2">
+            <span class="w-3 h-3 bg-[#FFE600] border-[1.5px] border-black inline-block"></span>
             Epistemic Ledger (Computed Claim Breakdown)
           </span>
-          <span id="epistemic-summary-text" class="font-mono text-slate-400 text-[11px]">Computing...</span>
+          <span id="epistemic-summary-text" class="font-mono font-bold text-black text-xs neo-badge bg-[#FAF8F5] px-2 py-0.5">Computing...</span>
         </div>
 
-        <!-- PROGRESS BAR -->
-        <div class="w-full h-2.5 rounded-full bg-slate-950 flex overflow-hidden border border-slate-800" id="ledger-bar">
-          <div style="width: 50%" class="bg-emerald-500 transition-all duration-500" title="Source Backed"></div>
-          <div style="width: 25%" class="bg-sky-500 transition-all duration-500" title="Inferences"></div>
-          <div style="width: 15%" class="bg-amber-500 transition-all duration-500" title="Assumptions"></div>
-          <div style="width: 10%" class="bg-rose-500 transition-all duration-500" title="Unknowns"></div>
+        <!-- PROGRESS BAR (NEOBRUTALIST MULTI-SEGMENT) -->
+        <div class="w-full h-4 rounded-md bg-[#FAF8F5] flex overflow-hidden border-[2px] border-black shadow-[2px_2px_0px_#000000]" id="ledger-bar">
+          <div style="width: 50%" class="bg-[#4ADE80] border-r-[2px] border-black transition-all duration-500" title="Source Backed"></div>
+          <div style="width: 25%" class="bg-[#38BDF8] border-r-[2px] border-black transition-all duration-500" title="Inferences"></div>
+          <div style="width: 15%" class="bg-[#FACC15] border-r-[2px] border-black transition-all duration-500" title="Assumptions"></div>
+          <div style="width: 10%" class="bg-[#FF6B6B] border-r-[2px] border-black transition-all duration-500" title="Unknowns"></div>
         </div>
 
-        <!-- COUNTERS -->
-        <div class="flex flex-wrap items-center gap-3 mt-2.5 text-[11px]" id="ledger-pills">
-          <span class="flex items-center gap-1 text-slate-300"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> <strong id="cnt-source" class="font-mono text-emerald-400">0</strong> Source-Backed</span>
-          <span class="flex items-center gap-1 text-slate-300"><span class="w-2 h-2 rounded-full bg-sky-500"></span> <strong id="cnt-infer" class="font-mono text-sky-400">0</strong> Inferences</span>
-          <span class="flex items-center gap-1 text-slate-300"><span class="w-2 h-2 rounded-full bg-amber-500"></span> <strong id="cnt-assump" class="font-mono text-amber-400">0</strong> Assumptions</span>
-          <span class="flex items-center gap-1 text-slate-300"><span class="w-2 h-2 rounded-full bg-rose-500"></span> <strong id="cnt-unknown" class="font-mono text-rose-400">0</strong> Unknowns</span>
-          <span class="flex items-center gap-1 text-slate-300"><span class="w-2 h-2 rounded-full bg-purple-500"></span> <strong id="cnt-hypo" class="font-mono text-purple-400">0</strong> Hypotheses</span>
+        <!-- COUNTERS BADGES -->
+        <div class="flex flex-wrap items-center gap-2.5 mt-3 text-xs" id="ledger-pills">
+          <span class="neo-badge bg-[#4ADE80] text-black px-2.5 py-1"><strong id="cnt-source" class="font-mono mr-1">0</strong> Source-Backed</span>
+          <span class="neo-badge bg-[#38BDF8] text-black px-2.5 py-1"><strong id="cnt-infer" class="font-mono mr-1">0</strong> Inferences</span>
+          <span class="neo-badge bg-[#FACC15] text-black px-2.5 py-1"><strong id="cnt-assump" class="font-mono mr-1">0</strong> Assumptions</span>
+          <span class="neo-badge bg-[#FF6B6B] text-black px-2.5 py-1"><strong id="cnt-unknown" class="font-mono mr-1">0</strong> Unknowns</span>
+          <span class="neo-badge bg-[#C084FC] text-black px-2.5 py-1"><strong id="cnt-hypo" class="font-mono mr-1">0</strong> Hypotheses</span>
         </div>
       </div>
     </div>
 
     <!-- TAB NAVIGATION BAR -->
-    <div class="border-b border-slate-800 flex items-center gap-1 overflow-x-auto text-sm font-medium">
-      <button onclick="switchTab('card')" id="tab-card" class="px-4 py-2.5 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap">
+    <div class="flex items-end gap-2 overflow-x-auto pb-1 border-b-[3px] border-black text-xs font-black">
+      <button onclick="switchTab('card')" id="tab-card" class="neo-tab-btn active px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
         <span>🧪</span> Experiment Card (MDE)
       </button>
-      <button onclick="switchTab('claims')" id="tab-claims" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('claims')" id="tab-claims" class="neo-tab-btn px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
         <span>📊</span> Claim Ledger (Pillar A)
       </button>
-      <button onclick="switchTab('redteam')" id="tab-redteam" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('redteam')" id="tab-redteam" class="neo-tab-btn px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
         <span>🛡️</span> Red-Team Critique (Pillar B)
       </button>
-      <button onclick="switchTab('sources')" id="tab-sources" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('sources')" id="tab-sources" class="neo-tab-btn px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
         <span>📑</span> Sources & Security
       </button>
-      <button onclick="switchTab('dossier')" id="tab-dossier" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('dossier')" id="tab-dossier" class="neo-tab-btn px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
         <span>📜</span> Full Technical Dossier
       </button>
-      <button onclick="switchTab('tamper')" id="tab-tamper" class="px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('tamper')" id="tab-tamper" class="neo-tab-btn px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
         <span>🔒</span> Tamper-Evident Lab
       </button>
     </div>
@@ -160,105 +255,126 @@
     <!-- TAB 1: EXPERIMENT CARD (MDE) -->
     <div id="content-card" class="tab-pane flex flex-col gap-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- HYPOTHESIS VS COMPETING ALTERNATIVE -->
-        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+        
+        <!-- HYPOTHESIS CARD -->
+        <div class="neo-box p-5 bg-white flex flex-col justify-between">
           <div>
-            <div class="flex items-center gap-2 mb-2 text-xs font-semibold text-emerald-400 uppercase tracking-wider">
-              <span>Proposed Physical Mechanism</span>
+            <div class="flex items-center justify-between mb-3">
+              <span class="neo-badge bg-[#4ADE80] text-black text-[10px] px-2.5 py-1">Proposed Physical Mechanism</span>
+              <span class="text-xs font-mono font-bold text-gray-500">Pillar C</span>
             </div>
-            <h3 class="text-sm font-semibold text-slate-200 mb-2">Core Experimental Hypothesis</h3>
-            <p id="card-hypothesis" class="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-3 rounded-lg border border-slate-800 font-mono">
+            <h3 class="text-sm font-black text-black uppercase mb-2">Core Experimental Hypothesis</h3>
+            <p id="card-hypothesis" class="text-xs text-black leading-relaxed bg-[#FAF8F5] p-3.5 rounded-lg border-[2px] border-black font-mono font-bold">
               Loading hypothesis...
             </p>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/80">
-            <span class="text-xs text-slate-400">MDE Objective:</span>
-            <span class="text-xs text-emerald-300 font-medium ml-1">Distinguish mechanism from alternative baseline before hardware spend.</span>
+          <div class="mt-4 pt-3 border-t-[2px] border-black flex items-center justify-between">
+            <span class="text-xs font-bold text-gray-700">MDE Objective:</span>
+            <span class="text-xs font-black text-black bg-[#FFE600] px-2 py-0.5 border border-black rounded">Distinguish from baseline before spend</span>
           </div>
         </div>
 
-        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+        <!-- COMPETING ALTERNATIVE CARD -->
+        <div class="neo-box p-5 bg-white flex flex-col justify-between">
           <div>
-            <div class="flex items-center gap-2 mb-2 text-xs font-semibold text-amber-400 uppercase tracking-wider">
-              <span>Competing Alternative Explanation</span>
+            <div class="flex items-center justify-between mb-3">
+              <span class="neo-badge bg-[#FACC15] text-black text-[10px] px-2.5 py-1">Competing Baseline Explanation</span>
+              <span class="text-xs font-mono font-bold text-gray-500">Pillar B</span>
             </div>
-            <h3 class="text-sm font-semibold text-slate-200 mb-2">Adversarial Baseline Explanation</h3>
-            <p id="card-alternative" class="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-3 rounded-lg border border-slate-800 font-mono">
+            <h3 class="text-sm font-black text-black uppercase mb-2">Adversarial Alternative</h3>
+            <p id="card-alternative" class="text-xs text-black leading-relaxed bg-[#FAF8F5] p-3.5 rounded-lg border-[2px] border-black font-mono font-bold">
               Loading alternative explanation...
             </p>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/80">
-            <span class="text-xs text-slate-400">Pillar B Review:</span>
-            <span class="text-xs text-amber-300 font-medium ml-1">Must be decoupled through 2x2 multi-speed test matrix.</span>
+          <div class="mt-4 pt-3 border-t-[2px] border-black flex items-center justify-between">
+            <span class="text-xs font-bold text-gray-700">Adversarial Rationale:</span>
+            <span class="text-xs font-black text-black bg-[#FB923C] px-2 py-0.5 border border-black rounded">Decouple via 2x2 multi-speed matrix</span>
           </div>
         </div>
       </div>
 
       <!-- MEASURED VARIABLES TABLE -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <span>📏</span> Instrumentation & Measured Variables
-        </h3>
+      <div class="neo-box p-5 bg-white">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b-[2px] border-black">
+          <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+            <span>📏</span> Instrumentation & Measured Variables
+          </h3>
+          <span class="neo-badge bg-[#E0E7FF] text-black text-[10px] px-2 py-0.5">Physical Units Defined</span>
+        </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-xs text-left">
-            <thead class="text-slate-400 bg-slate-950 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table class="w-full text-xs text-left border-[2px] border-black">
+            <thead class="bg-[#FAF8F5] text-black uppercase text-[10px] tracking-wider border-b-[2px] border-black font-mono font-black">
               <tr>
-                <th class="py-2.5 px-3">Classification</th>
-                <th class="py-2.5 px-3">Variable Name</th>
-                <th class="py-2.5 px-3">Unit</th>
+                <th class="py-2.5 px-4 border-r-[2px] border-black">Classification</th>
+                <th class="py-2.5 px-4 border-r-[2px] border-black">Variable Name</th>
+                <th class="py-2.5 px-4">Unit of Measurement</th>
               </tr>
             </thead>
-            <tbody id="variables-tbody" class="divide-y divide-slate-800/60 font-mono">
-              <tr><td colspan="3" class="py-4 text-center text-slate-500">Loading variables...</td></tr>
+            <tbody id="variables-tbody" class="divide-y-[2px] divide-black font-mono font-bold">
+              <tr><td colspan="3" class="py-4 text-center text-gray-500">Loading variables...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- DECISION RULES (GO / NO-GO) -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <span>⚖️</span> Pre-Registered Decision Rules (Go / No-Go)
-        </h3>
+      <!-- PRE-REGISTERED DECISION RULES (GO / NO-GO) -->
+      <div class="neo-box p-5 bg-white">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b-[2px] border-black">
+          <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+            <span>⚖️</span> Pre-Registered Decision Rules (Go / No-Go)
+          </h3>
+          <span class="neo-badge bg-[#FFE600] text-black text-[10px] px-2 py-0.5">Zero Post-Hoc Goalpost Moving</span>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="p-3.5 rounded-lg bg-emerald-950/40 border border-emerald-600/30">
-            <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> SUPPORTS HYPOTHESIS
+          
+          <div class="p-4 rounded-lg bg-[#F0FDF4] border-[2.5px] border-black shadow-[3px_3px_0px_#000000]">
+            <div class="neo-badge bg-[#4ADE80] text-black text-[10px] px-2 py-0.5 mb-2">
+              SUPPORTS HYPOTHESIS
             </div>
-            <p id="rule-supports" class="text-xs text-slate-300 font-mono mt-2">Loading...</p>
-            <div class="mt-3 text-[11px] font-semibold text-emerald-400">Next: Proceed to integrated bench prototype</div>
+            <p id="rule-supports" class="text-xs text-black font-mono font-bold mt-2">Loading...</p>
+            <div class="mt-3 pt-2 border-t border-black text-[11px] font-black text-black uppercase">
+              Next: Proceed to bench prototype
+            </div>
           </div>
 
-          <div class="p-3.5 rounded-lg bg-rose-950/40 border border-rose-600/30">
-            <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-rose-500"></span> WEAKENS / REJECTS
+          <div class="p-4 rounded-lg bg-[#FEF2F2] border-[2.5px] border-black shadow-[3px_3px_0px_#000000]">
+            <div class="neo-badge bg-[#FF6B6B] text-black text-[10px] px-2 py-0.5 mb-2">
+              WEAKENS / REJECTS
             </div>
-            <p id="rule-weakens" class="text-xs text-slate-300 font-mono mt-2">Loading...</p>
-            <div class="mt-3 text-[11px] font-semibold text-rose-400">Next: Mechanism falsified; revise or abort</div>
+            <p id="rule-weakens" class="text-xs text-black font-mono font-bold mt-2">Loading...</p>
+            <div class="mt-3 pt-2 border-t border-black text-[11px] font-black text-black uppercase">
+              Next: Mechanism falsified; abort
+            </div>
           </div>
 
-          <div class="p-3.5 rounded-lg bg-amber-950/40 border border-amber-600/30">
-            <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-500"></span> INCONCLUSIVE
+          <div class="p-4 rounded-lg bg-[#FEFCE8] border-[2.5px] border-black shadow-[3px_3px_0px_#000000]">
+            <div class="neo-badge bg-[#FACC15] text-black text-[10px] px-2 py-0.5 mb-2">
+              INCONCLUSIVE
             </div>
-            <p id="rule-inconclusive" class="text-xs text-slate-300 font-mono mt-2">Loading...</p>
-            <div class="mt-3 text-[11px] font-semibold text-amber-400">Next: Recalibrate DAQ / increase SNR</div>
+            <p id="rule-inconclusive" class="text-xs text-black font-mono font-bold mt-2">Loading...</p>
+            <div class="mt-3 pt-2 border-t border-black text-[11px] font-black text-black uppercase">
+              Next: Recalibrate DAQ / Increase SNR
+            </div>
           </div>
         </div>
       </div>
 
       <!-- PROCEDURE & EQUIPMENT -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
-          <h3 class="text-sm font-bold text-white mb-3">Equipment Required</h3>
-          <ul id="equipment-list" class="space-y-1.5 text-xs text-slate-300">
+        <div class="neo-box p-5 bg-white">
+          <h3 class="text-sm font-black text-black uppercase mb-3 pb-2 border-b-[2px] border-black flex items-center gap-2">
+            <span>🧰</span> Equipment Required
+          </h3>
+          <ul id="equipment-list" class="space-y-2 text-xs font-bold text-gray-900">
             <li>Loading equipment...</li>
           </ul>
         </div>
 
-        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
-          <h3 class="text-sm font-bold text-white mb-3">Test Procedure Protocol</h3>
-          <ol id="procedure-list" class="space-y-1.5 text-xs text-slate-300 list-decimal list-inside font-mono">
+        <div class="neo-box p-5 bg-white">
+          <h3 class="text-sm font-black text-black uppercase mb-3 pb-2 border-b-[2px] border-black flex items-center gap-2">
+            <span>📋</span> Test Procedure Protocol
+          </h3>
+          <ol id="procedure-list" class="space-y-2 text-xs font-mono font-bold text-black list-decimal list-inside">
             <li>Loading procedure...</li>
           </ol>
         </div>
@@ -267,71 +383,85 @@
 
     <!-- TAB 2: CLAIM LEDGER (PILLAR A) -->
     <div id="content-claims" class="tab-pane hidden flex flex-col gap-4">
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-3 rounded-lg border border-slate-800">
-        <div class="flex items-center gap-1.5 overflow-x-auto text-xs">
-          <button onclick="filterClaims('ALL')" class="px-2.5 py-1 rounded bg-slate-800 text-slate-200 border border-slate-700 claim-filter-btn" data-filter="ALL">All Claims</button>
-          <button onclick="filterClaims('SOURCE_BACKED')" class="px-2.5 py-1 rounded hover:bg-slate-800 text-slate-400 claim-filter-btn" data-filter="SOURCE_BACKED">Source-Backed</button>
-          <button onclick="filterClaims('INFERENCE')" class="px-2.5 py-1 rounded hover:bg-slate-800 text-slate-400 claim-filter-btn" data-filter="INFERENCE">Inferences</button>
-          <button onclick="filterClaims('ASSUMPTION')" class="px-2.5 py-1 rounded hover:bg-slate-800 text-slate-400 claim-filter-btn" data-filter="ASSUMPTION">Assumptions</button>
-          <button onclick="filterClaims('UNKNOWN')" class="px-2.5 py-1 rounded hover:bg-slate-800 text-slate-400 claim-filter-btn" data-filter="UNKNOWN">Unknowns</button>
+      <div class="neo-box p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 overflow-x-auto text-xs font-black">
+          <button onclick="filterClaims('ALL')" class="claim-filter-btn neo-btn bg-[#FFE600] text-black px-3 py-1.5" data-filter="ALL">All Claims</button>
+          <button onclick="filterClaims('SOURCE_BACKED')" class="claim-filter-btn neo-btn bg-white text-black px-3 py-1.5" data-filter="SOURCE_BACKED">Source-Backed</button>
+          <button onclick="filterClaims('INFERENCE')" class="claim-filter-btn neo-btn bg-white text-black px-3 py-1.5" data-filter="INFERENCE">Inferences</button>
+          <button onclick="filterClaims('ASSUMPTION')" class="claim-filter-btn neo-btn bg-white text-black px-3 py-1.5" data-filter="ASSUMPTION">Assumptions</button>
+          <button onclick="filterClaims('UNKNOWN')" class="claim-filter-btn neo-btn bg-white text-black px-3 py-1.5" data-filter="UNKNOWN">Unknowns</button>
         </div>
-        <input type="text" id="claims-search" oninput="searchClaims(this.value)" placeholder="Search claims or locators..." class="bg-slate-950 border border-slate-700 rounded px-3 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 w-60">
+        <input type="text" id="claims-search" oninput="searchClaims(this.value)" placeholder="Search claims or locators..." class="neo-input bg-[#FAF8F5] px-3 py-1.5 text-xs font-mono font-bold text-black w-64">
       </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 font-mono">
-            <tr>
-              <th class="py-2.5 px-3">ID</th>
-              <th class="py-2.5 px-3">Taxonomy</th>
-              <th class="py-2.5 px-3">Claim Statement</th>
-              <th class="py-2.5 px-3">Source ID</th>
-              <th class="py-2.5 px-3">Locator</th>
-              <th class="py-2.5 px-3">Confidence</th>
-            </tr>
-          </thead>
-          <tbody id="claims-tbody" class="divide-y divide-slate-800/60 font-mono">
-            <tr><td colspan="6" class="py-6 text-center text-slate-500">Loading claim ledger...</td></tr>
-          </tbody>
-        </table>
+      <div class="neo-box bg-white overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-[#FAF8F5] text-black uppercase text-[10px] tracking-wider border-b-[2.5px] border-black font-mono font-black">
+              <tr>
+                <th class="py-3 px-3.5 border-r-[2px] border-black">ID</th>
+                <th class="py-3 px-3.5 border-r-[2px] border-black">Taxonomy</th>
+                <th class="py-3 px-3.5 border-r-[2px] border-black">Claim Statement</th>
+                <th class="py-3 px-3.5 border-r-[2px] border-black">Source ID</th>
+                <th class="py-3 px-3.5 border-r-[2px] border-black">Locator</th>
+                <th class="py-3 px-3.5">Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="claims-tbody" class="divide-y-[2px] divide-black font-mono font-bold">
+              <tr><td colspan="6" class="py-6 text-center text-gray-500">Loading claim ledger...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- TAB 3: ADVERSARIAL RED-TEAM (PILLAR B) -->
     <div id="content-redteam" class="tab-pane hidden flex flex-col gap-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <h3 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
-            <span>⚠️</span> Consequential Assumptions Challenged
-          </h3>
-          <ul id="redteam-assumptions" class="space-y-2 text-xs text-slate-300">
+        <div class="neo-box p-5 bg-[#FEFCE8]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b-[2px] border-black">
+            <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+              <span>⚠️</span> Consequential Assumptions Challenged
+            </h3>
+            <span class="neo-badge bg-[#FACC15] text-black text-[10px] px-2 py-0.5">Top 3 Targeted</span>
+          </div>
+          <ul id="redteam-assumptions" class="space-y-2.5 text-xs font-bold text-gray-900">
             <li>Loading...</li>
           </ul>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <h3 class="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2">
-            <span>🔄</span> Competing Alternative Explanations
-          </h3>
-          <ul id="redteam-alternatives" class="space-y-2 text-xs text-slate-300">
+        <div class="neo-box p-5 bg-[#F0F9FF]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b-[2px] border-black">
+            <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+              <span>🔄</span> Competing Alternative Explanations
+            </h3>
+            <span class="neo-badge bg-[#38BDF8] text-black text-[10px] px-2 py-0.5">&ge; 2 Required</span>
+          </div>
+          <ul id="redteam-alternatives" class="space-y-2.5 text-xs font-bold text-gray-900">
             <li>Loading...</li>
           </ul>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <h3 class="text-sm font-bold text-rose-400 mb-3 flex items-center gap-2">
-            <span>🌪️</span> Confounding Variables & Noise Floor
-          </h3>
-          <ul id="redteam-confounders" class="space-y-2 text-xs text-slate-300">
+        <div class="neo-box p-5 bg-[#FEF2F2]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b-[2px] border-black">
+            <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+              <span>🌪️</span> Confounding Variables & Noise Floor
+            </h3>
+            <span class="neo-badge bg-[#FF6B6B] text-black text-[10px] px-2 py-0.5">Decoupling Needed</span>
+          </div>
+          <ul id="redteam-confounders" class="space-y-2.5 text-xs font-bold text-gray-900">
             <li>Loading...</li>
           </ul>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <h3 class="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2">
-            <span>🎯</span> Evidence That Would Change Assessment
-          </h3>
-          <ul id="redteam-evidence-change" class="space-y-2 text-xs text-slate-300">
+        <div class="neo-box p-5 bg-[#F0FDF4]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b-[2px] border-black">
+            <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+              <span>🎯</span> Evidence That Would Change Assessment
+            </h3>
+            <span class="neo-badge bg-[#4ADE80] text-black text-[10px] px-2 py-0.5">Falsification Gate</span>
+          </div>
+          <ul id="redteam-evidence-change" class="space-y-2.5 text-xs font-bold text-gray-900">
             <li>Loading...</li>
           </ul>
         </div>
@@ -340,82 +470,92 @@
 
     <!-- TAB 4: SOURCES & SECURITY -->
     <div id="content-sources" class="tab-pane hidden flex flex-col gap-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3 flex items-center justify-between">
-          <span>Ingested Reference Sources</span>
-          <span class="text-xs font-normal text-slate-400">Deterministic SHA-256 Registered</span>
-        </h3>
+      <div class="neo-box p-5 bg-white">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b-[2.5px] border-black">
+          <div>
+            <h3 class="text-sm font-black text-black uppercase flex items-center gap-2">
+              <span>📑</span> Ingested Reference Sources
+            </h3>
+            <p class="text-xs font-bold text-gray-600">Deterministic SHA-256 Registered with Line/Page Locators</p>
+          </div>
+          <span class="neo-badge bg-[#FFE600] text-black text-[10px] px-2.5 py-1">Untrusted Data Boundary</span>
+        </div>
         <div class="space-y-3" id="sources-list">
-          <div class="text-slate-500 text-xs text-center py-4">Loading sources...</div>
+          <div class="text-gray-500 text-xs text-center py-4 font-mono font-bold">Loading sources...</div>
         </div>
       </div>
     </div>
 
     <!-- TAB 5: FULL TECHNICAL DOSSIER -->
     <div id="content-dossier" class="tab-pane hidden flex flex-col gap-4">
-      <div class="flex items-center justify-between bg-slate-900 p-3 rounded-lg border border-slate-800 text-xs">
-        <span class="text-slate-300">Comprehensive Technical Verification Appendix (`dossier.md`)</span>
-        <button onclick="copyDossierMarkdown()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Copy Markdown</button>
+      <div class="neo-box p-4 bg-white flex items-center justify-between text-xs">
+        <span class="font-bold text-black">Comprehensive Technical Verification Appendix (<code class="bg-[#FAF8F5] px-2 py-1 border border-black rounded">dossier.md</code>)</span>
+        <button onclick="copyDossierMarkdown()" class="neo-btn bg-[#FFE600] text-black px-3 py-1.5 text-xs">Copy Markdown</button>
       </div>
-      <pre id="dossier-raw" class="bg-slate-950 border border-slate-800 rounded-xl p-6 text-xs text-slate-300 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed">
+      <div class="neo-box p-6 bg-white overflow-hidden">
+        <pre id="dossier-raw" class="bg-[#FAF8F5] border-[2px] border-black rounded-lg p-5 text-xs text-black overflow-x-auto whitespace-pre-wrap font-mono font-bold leading-relaxed">
 Loading complete dossier markdown...
-      </pre>
+        </pre>
+      </div>
     </div>
 
     <!-- TAB 6: TAMPER-EVIDENT LAB -->
     <div id="content-tamper" class="tab-pane hidden flex flex-col gap-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold">
+      <div class="neo-box p-6 bg-white">
+        <div class="flex items-center gap-3 mb-4 pb-3 border-b-[2.5px] border-black">
+          <div class="w-12 h-12 rounded-lg bg-[#FFE600] border-[2.5px] border-black shadow-[3px_3px_0px_#000000] flex items-center justify-center text-2xl font-black">
             🔒
           </div>
           <div>
-            <h3 class="text-base font-bold text-white">Cryptographic Tamper-Evident Lab</h3>
-            <p class="text-xs text-slate-400">Pre-register acceptance criteria to prevent moving the goalposts after experimentation.</p>
+            <h3 class="text-lg font-black text-black uppercase">Cryptographic Tamper-Evident Lab</h3>
+            <p class="text-xs font-bold text-gray-700">Pre-registers acceptance criteria to prevent moving goalposts after running experiments.</p>
           </div>
         </div>
 
-        <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2 mb-6">
-          <div class="flex justify-between items-center text-slate-400 pb-2 border-b border-slate-800">
-            <span>Pre-Registered Cryptographic Hashes:</span>
-            <span id="tamper-registered-time" class="text-emerald-400 text-[11px]">-</span>
+        <div class="neo-box-sm bg-[#FAF8F5] p-4 font-mono font-bold text-xs space-y-2 mb-6">
+          <div class="flex justify-between items-center text-black pb-2 border-b-[2px] border-black">
+            <span class="uppercase tracking-wider">Pre-Registered Cryptographic Hashes:</span>
+            <span id="tamper-registered-time" class="neo-badge bg-[#4ADE80] text-black text-[10px] px-2 py-0.5">-</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-slate-500 w-28">dossier_hash:</span>
-            <span id="hash-dossier" class="text-slate-300 truncate">Not approved</span>
+            <span class="text-gray-600 w-32">dossier_hash:</span>
+            <span id="hash-dossier" class="text-black bg-white px-2 py-0.5 border border-black rounded truncate flex-1">Not approved</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-slate-500 w-28">criteria_hash:</span>
-            <span id="hash-criteria" class="text-slate-300 truncate">Not approved</span>
+            <span class="text-gray-600 w-32">criteria_hash:</span>
+            <span id="hash-criteria" class="text-black bg-white px-2 py-0.5 border border-black rounded truncate flex-1">Not approved</span>
           </div>
         </div>
 
         <!-- 20-SECOND TAMPER SIMULATOR CONTROLS -->
-        <div class="border border-slate-800 bg-slate-950/60 rounded-xl p-5 space-y-4">
-          <h4 class="text-sm font-bold text-white flex items-center gap-2">
-            <span>⚡</span> The 20-Second Tamper Test Simulator
-          </h4>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            Simulate an unauthorized change to the prototype plan (e.g. changing the harmonic threshold from 6dB to 12dB).
+        <div class="neo-box-sm bg-[#FFFDF5] p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-black text-black uppercase flex items-center gap-2">
+              <span>⚡</span> The 20-Second Tamper Test Simulator
+            </h4>
+            <span class="neo-badge bg-[#FF6B6B] text-black text-[10px] px-2 py-0.5">Live Attack Test</span>
+          </div>
+          <p class="text-xs font-bold text-gray-800 leading-relaxed">
+            Simulate an unauthorized change to the prototype plan (e.g. changing the harmonic defect threshold from 6dB to 12dB).
             Then run the validator to watch the cryptographic hash check fail in real time!
           </p>
 
           <div class="flex flex-wrap items-center gap-3">
-            <button onclick="simulateTamper('tamper')" class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <button onclick="simulateTamper('tamper')" class="neo-btn bg-[#FF6B6B] text-black text-xs px-4 py-2.5 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
               Step 1: Modify Acceptance Criteria (Simulate Tampering)
             </button>
-            <button onclick="triggerValidate()" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <button onclick="triggerValidate()" class="neo-btn bg-[#38BDF8] text-black text-xs px-4 py-2.5 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               Step 2: Run Validator (Watch It Fail)
             </button>
-            <button onclick="simulateTamper('restore')" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold transition flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <button onclick="simulateTamper('restore')" class="neo-btn bg-[#FAF8F5] text-black text-xs px-4 py-2.5 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               Step 3: Restore Original Plan & Pass
             </button>
           </div>
 
-          <div id="tamper-output" class="hidden mt-4 p-4 rounded-lg bg-slate-950 border text-xs font-mono">
+          <div id="tamper-output" class="hidden mt-4 p-4 rounded-lg neo-box-sm text-xs font-mono font-bold">
           </div>
         </div>
       </div>
@@ -423,30 +563,30 @@ Loading complete dossier markdown...
   </main>
 
   <!-- APPROVAL MODAL -->
-  <div id="approval-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
+  <div id="approval-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="neo-box bg-white max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b-[2.5px] border-black">
+        <h3 class="text-base font-black text-black uppercase flex items-center gap-2">
           <span>🔒</span> Human Experiment Approval Gate
         </h3>
-        <button onclick="closeApprovalModal()" class="text-slate-400 hover:text-white">&times;</button>
+        <button onclick="closeApprovalModal()" class="neo-btn bg-[#FAF8F5] text-black px-2 py-0.5 text-base">&times;</button>
       </div>
-      <p class="text-xs text-slate-300">
+      <p class="text-xs font-bold text-gray-800">
         Recording human approval permanently registers SHA-256 hashes of the dossier and acceptance criteria, activating tamper-evident locking.
       </p>
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Actor Identity</label>
-          <input type="text" id="approval-actor" value="lead_inventor" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+          <label class="block text-xs font-black uppercase text-black mb-1">Actor Identity</label>
+          <input type="text" id="approval-actor" value="lead_inventor" class="neo-input w-full bg-[#FAF8F5] px-3 py-2 text-xs font-mono font-bold text-black">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Approval Statement & Decision Rationale</label>
-          <textarea id="approval-statement" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">Risks acceptable for benchtop test rig; pre-registering 6dB harmonic defect detection threshold.</textarea>
+          <label class="block text-xs font-black uppercase text-black mb-1">Approval Statement & Decision Rationale</label>
+          <textarea id="approval-statement" rows="3" class="neo-input w-full bg-[#FAF8F5] px-3 py-2 text-xs font-mono font-bold text-black">Risks acceptable for benchtop test rig; pre-registering 6dB harmonic defect detection threshold.</textarea>
         </div>
       </div>
-      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-        <button onclick="closeApprovalModal()" class="px-4 py-1.5 rounded-lg border border-slate-700 hover:bg-slate-800 text-xs text-slate-300">Cancel</button>
-        <button onclick="submitApproval()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Confirm & Register Hashes</button>
+      <div class="flex justify-end gap-2.5 pt-3 border-t-[2px] border-black">
+        <button onclick="closeApprovalModal()" class="neo-btn bg-[#FAF8F5] text-black px-4 py-2 text-xs">Cancel</button>
+        <button onclick="submitApproval()" class="neo-btn bg-[#4ADE80] text-black px-4 py-2 text-xs">Confirm & Register Hashes</button>
       </div>
     </div>
   </div>
@@ -504,20 +644,20 @@ Loading complete dossier markdown...
       const confPill = document.getElementById('confidential-pill');
       if (idea && idea.confidentiality_acknowledged) {
         confPill.textContent = 'NDA / Confidential Sources';
-        confPill.className = 'text-amber-400 font-semibold';
+        confPill.className = 'neo-badge bg-[#FACC15] text-black px-2 py-0.5';
       } else {
         confPill.textContent = 'Public / Unrestricted';
-        confPill.className = 'text-slate-400';
+        confPill.className = 'neo-badge bg-[#E0E7FF] text-black px-2 py-0.5';
       }
 
       // Status
       const statusBadge = document.getElementById('status-badge');
       if (data.status === 'APPROVED') {
         statusBadge.textContent = 'APPROVED';
-        statusBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full border bg-emerald-950 text-emerald-400 border-emerald-600/40';
+        statusBadge.className = 'neo-badge bg-[#4ADE80] text-black text-xs px-3 py-1.5';
       } else {
         statusBadge.textContent = 'DRAFT';
-        statusBadge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full border bg-amber-950/60 text-amber-400 border-amber-600/40';
+        statusBadge.className = 'neo-badge bg-[#FFE600] text-black text-xs px-3 py-1.5';
       }
 
       // Tamper badge
@@ -547,11 +687,11 @@ Loading complete dossier markdown...
 
       const bar = document.getElementById('ledger-bar');
       bar.innerHTML = `
-        <div style="width: ${(sb/total)*100}%" class="bg-emerald-500" title="Source Backed (${sb})"></div>
-        <div style="width: ${(inf/total)*100}%" class="bg-sky-500" title="Inferences (${inf})"></div>
-        <div style="width: ${(ass/total)*100}%" class="bg-amber-500" title="Assumptions (${ass})"></div>
-        <div style="width: ${(unk/total)*100}%" class="bg-rose-500" title="Unknowns (${unk})"></div>
-        <div style="width: ${(hyp/total)*100}%" class="bg-purple-500" title="Hypotheses (${hyp})"></div>
+        <div style="width: ${(sb/total)*100}%" class="bg-[#4ADE80] border-r-[2px] border-black" title="Source Backed (${sb})"></div>
+        <div style="width: ${(inf/total)*100}%" class="bg-[#38BDF8] border-r-[2px] border-black" title="Inferences (${inf})"></div>
+        <div style="width: ${(ass/total)*100}%" class="bg-[#FACC15] border-r-[2px] border-black" title="Assumptions (${ass})"></div>
+        <div style="width: ${(unk/total)*100}%" class="bg-[#FF6B6B] border-r-[2px] border-black" title="Unknowns (${unk})"></div>
+        <div style="width: ${(hyp/total)*100}%" class="bg-[#C084FC]" title="Hypotheses (${hyp})"></div>
       `;
 
       // Card Content
@@ -567,22 +707,22 @@ Loading complete dossier markdown...
         const vtbody = document.getElementById('variables-tbody');
         vtbody.innerHTML = '';
         (expPlan.independent_variables || []).forEach(v => {
-          vtbody.innerHTML += `<tr><td class="py-2 px-3 text-sky-400">Independent (Changes)</td><td class="py-2 px-3 text-slate-200">${v.name}</td><td class="py-2 px-3 text-slate-400">${v.unit}</td></tr>`;
+          vtbody.innerHTML += `<tr><td class="py-2.5 px-4 border-r-[2px] border-black text-[#0284C7] font-black">Independent (Changes)</td><td class="py-2.5 px-4 border-r-[2px] border-black text-black">${v.name}</td><td class="py-2.5 px-4 text-gray-700">${v.unit}</td></tr>`;
         });
         (expPlan.dependent_variables || []).forEach(v => {
-          vtbody.innerHTML += `<tr><td class="py-2 px-3 text-emerald-400">Dependent (Measured)</td><td class="py-2 px-3 text-slate-200">${v.name}</td><td class="py-2 px-3 text-slate-400">${v.unit}</td></tr>`;
+          vtbody.innerHTML += `<tr><td class="py-2.5 px-4 border-r-[2px] border-black text-[#16A34A] font-black">Dependent (Measured)</td><td class="py-2.5 px-4 border-r-[2px] border-black text-black">${v.name}</td><td class="py-2.5 px-4 text-gray-700">${v.unit}</td></tr>`;
         });
         (expPlan.control_variables || []).forEach(v => {
-          vtbody.innerHTML += `<tr><td class="py-2 px-3 text-slate-400">Control (Constant)</td><td class="py-2 px-3 text-slate-200">${v.name}</td><td class="py-2 px-3 text-slate-400">${v.unit}</td></tr>`;
+          vtbody.innerHTML += `<tr><td class="py-2.5 px-4 border-r-[2px] border-black text-gray-600 font-black">Control (Constant)</td><td class="py-2.5 px-4 border-r-[2px] border-black text-black">${v.name}</td><td class="py-2.5 px-4 text-gray-700">${v.unit}</td></tr>`;
         });
 
         // Equipment
         const eqList = document.getElementById('equipment-list');
-        eqList.innerHTML = (expPlan.equipment || []).map(e => `<li>&bull; ${e}</li>`).join('');
+        eqList.innerHTML = (expPlan.equipment || []).map(e => `<li class="flex items-center gap-2"><span class="w-2 h-2 bg-[#FFE600] border border-black inline-block"></span> ${e}</li>`).join('');
 
         // Procedure
         const prList = document.getElementById('procedure-list');
-        prList.innerHTML = (expPlan.procedure || []).map(p => `<li>${p}</li>`).join('');
+        prList.innerHTML = (expPlan.procedure || []).map(p => `<li class="mb-1">${p}</li>`).join('');
       }
 
       // Claims
@@ -592,28 +732,28 @@ Loading complete dossier markdown...
       // Red Team
       const review = data.artifacts.review;
       if (review) {
-        document.getElementById('redteam-assumptions').innerHTML = (review.consequential_assumptions || []).map(i => `<li>&bull; ${i}</li>`).join('');
-        document.getElementById('redteam-alternatives').innerHTML = (review.alternative_mechanisms || []).map(i => `<li>&bull; ${i}</li>`).join('');
-        document.getElementById('redteam-confounders').innerHTML = (review.confounding_variables || []).map(i => `<li>&bull; ${i}</li>`).join('');
-        document.getElementById('redteam-evidence-change').innerHTML = (review.evidence_that_would_change_assessment || []).map(i => `<li>&bull; ${i}</li>`).join('');
+        document.getElementById('redteam-assumptions').innerHTML = (review.consequential_assumptions || []).map(i => `<li class="flex items-start gap-2"><span class="w-2 h-2 bg-[#FACC15] border border-black inline-block mt-1 shrink-0"></span> <span>${i}</span></li>`).join('');
+        document.getElementById('redteam-alternatives').innerHTML = (review.alternative_mechanisms || []).map(i => `<li class="flex items-start gap-2"><span class="w-2 h-2 bg-[#38BDF8] border border-black inline-block mt-1 shrink-0"></span> <span>${i}</span></li>`).join('');
+        document.getElementById('redteam-confounders').innerHTML = (review.confounding_variables || []).map(i => `<li class="flex items-start gap-2"><span class="w-2 h-2 bg-[#FF6B6B] border border-black inline-block mt-1 shrink-0"></span> <span>${i}</span></li>`).join('');
+        document.getElementById('redteam-evidence-change').innerHTML = (review.evidence_that_would_change_assessment || []).map(i => `<li class="flex items-start gap-2"><span class="w-2 h-2 bg-[#4ADE80] border border-black inline-block mt-1 shrink-0"></span> <span>${i}</span></li>`).join('');
       }
 
       // Sources
       const sourcesList = document.getElementById('sources-list');
       sourcesList.innerHTML = (data.sources || []).map(s => {
         const warnings = (s.extraction_warnings || []);
-        const warnBadge = warnings.length ? `<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-600/40 text-[10px]">⚠️ ${warnings.length} Injection Flagged</span>` : '';
+        const warnBadge = warnings.length ? `<span class="neo-badge bg-[#FF6B6B] text-black text-[10px] px-2 py-0.5">⚠️ ${warnings.length} Injection Flagged</span>` : '';
         return `
-          <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs">
+          <div class="p-4 bg-[#FAF8F5] border-[2px] border-black rounded-lg shadow-[3px_3px_0px_#000000] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-200">${s.original_name}</span>
-                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">${s.media_type}</span>
+                <span class="font-black text-black text-sm">${s.original_name}</span>
+                <span class="neo-badge bg-white text-black text-[10px] px-1.5 py-0.5">${s.media_type}</span>
                 ${warnBadge}
               </div>
-              <div class="text-[11px] font-mono text-slate-500 mt-1">ID: ${s.source_id} &bull; SHA-256: ${s.original_sha256 ? s.original_sha256.substring(0, 16) + '...' : '-'} &bull; ${s.locators ? s.locators.length : 0} locators</div>
+              <div class="text-[11px] font-mono font-bold text-gray-700 mt-1">ID: ${s.source_id} &bull; SHA-256: ${s.original_sha256 ? s.original_sha256.substring(0, 16) + '...' : '-'} &bull; ${s.locators ? s.locators.length : 0} locators</div>
             </div>
-            ${warnings.length ? `<div class="text-[11px] text-rose-400 font-mono bg-rose-950/30 p-2 rounded border border-rose-900">${warnings.join('<br>')}</div>` : ''}
+            ${warnings.length ? `<div class="text-[11px] text-black font-mono font-bold bg-[#FEF2F2] p-2.5 rounded border-[2px] border-black shadow-[2px_2px_0px_#000000]">${warnings.join('<br>')}</div>` : ''}
           </div>
         `;
       }).join('');
@@ -647,28 +787,28 @@ Loading complete dossier markdown...
       });
 
       if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-500">No matching claims</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-gray-500 font-bold">No matching claims found</td></tr>';
         return;
       }
 
       filtered.forEach((c, i) => {
         let typeBadge = '';
-        if (c.fact_type === 'SOURCE_BACKED') typeBadge = '<span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/30 text-[10px]">SOURCE_BACKED</span>';
-        else if (c.fact_type === 'INFERENCE') typeBadge = '<span class="px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-600/30 text-[10px]">INFERENCE</span>';
-        else if (c.fact_type === 'ASSUMPTION') typeBadge = '<span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/30 text-[10px]">ASSUMPTION</span>';
-        else if (c.fact_type === 'UNKNOWN') typeBadge = '<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-600/30 text-[10px]">UNKNOWN</span>';
-        else typeBadge = `<span class="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-600/30 text-[10px]">${c.fact_type}</span>`;
+        if (c.fact_type === 'SOURCE_BACKED') typeBadge = '<span class="neo-badge bg-[#4ADE80] text-black text-[10px] px-2 py-0.5">SOURCE_BACKED</span>';
+        else if (c.fact_type === 'INFERENCE') typeBadge = '<span class="neo-badge bg-[#38BDF8] text-black text-[10px] px-2 py-0.5">INFERENCE</span>';
+        else if (c.fact_type === 'ASSUMPTION') typeBadge = '<span class="neo-badge bg-[#FACC15] text-black text-[10px] px-2 py-0.5">ASSUMPTION</span>';
+        else if (c.fact_type === 'UNKNOWN') typeBadge = '<span class="neo-badge bg-[#FF6B6B] text-black text-[10px] px-2 py-0.5">UNKNOWN</span>';
+        else typeBadge = `<span class="neo-badge bg-[#C084FC] text-black text-[10px] px-2 py-0.5">${c.fact_type}</span>`;
 
-        const locatorBadge = c.locator ? `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">${c.locator}</span>` : '<span class="text-slate-600">—</span>';
+        const locatorBadge = c.locator ? `<span class="neo-badge bg-white text-black px-1.5 py-0.5 text-[10px]">${c.locator}</span>` : '<span class="text-gray-400">—</span>';
 
         tbody.innerHTML += `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="py-2.5 px-3 text-slate-400">${c.claim_id || `CLM-${String(i+1).padStart(3, '0')}`}</td>
-            <td class="py-2.5 px-3">${typeBadge}</td>
-            <td class="py-2.5 px-3 text-slate-200 max-w-md">${c.claim}</td>
-            <td class="py-2.5 px-3 text-slate-400">${c.source_id || '—'}</td>
-            <td class="py-2.5 px-3 font-mono">${locatorBadge}</td>
-            <td class="py-2.5 px-3 text-slate-400">${c.confidence || 'low'}</td>
+          <tr class="hover:bg-[#FFFDF5] transition">
+            <td class="py-2.5 px-3.5 border-r-[2px] border-black text-gray-600">${c.claim_id || `CLM-${String(i+1).padStart(3, '0')}`}</td>
+            <td class="py-2.5 px-3.5 border-r-[2px] border-black">${typeBadge}</td>
+            <td class="py-2.5 px-3.5 border-r-[2px] border-black text-black font-sans font-bold max-w-md">${c.claim}</td>
+            <td class="py-2.5 px-3.5 border-r-[2px] border-black text-gray-700">${c.source_id || '—'}</td>
+            <td class="py-2.5 px-3.5 border-r-[2px] border-black font-mono">${locatorBadge}</td>
+            <td class="py-2.5 px-3.5 text-gray-700">${c.confidence || 'low'}</td>
           </tr>
         `;
       });
@@ -678,9 +818,9 @@ Loading complete dossier markdown...
       currentFilter = type;
       document.querySelectorAll('.claim-filter-btn').forEach(btn => {
         if (btn.getAttribute('data-filter') === type) {
-          btn.className = 'px-2.5 py-1 rounded bg-slate-800 text-slate-200 border border-slate-700 claim-filter-btn';
+          btn.className = 'claim-filter-btn neo-btn bg-[#FFE600] text-black px-3 py-1.5';
         } else {
-          btn.className = 'px-2.5 py-1 rounded hover:bg-slate-800 text-slate-400 claim-filter-btn';
+          btn.className = 'claim-filter-btn neo-btn bg-white text-black px-3 py-1.5';
         }
       });
       renderClaimsTable();
@@ -692,14 +832,14 @@ Loading complete dossier markdown...
 
     function switchTab(name) {
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('[id^="tab-"]').forEach(el => {
-        el.className = 'px-4 py-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap';
+      document.querySelectorAll('.neo-tab-btn').forEach(el => {
+        el.classList.remove('active');
       });
 
       const targetPane = document.getElementById(`content-${name}`);
       const targetTab = document.getElementById(`tab-${name}`);
       if (targetPane) targetPane.classList.remove('hidden');
-      if (targetTab) targetTab.className = 'px-4 py-2.5 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap';
+      if (targetTab) targetTab.classList.add('active');
     }
 
     async function triggerValidate() {
@@ -710,11 +850,11 @@ Loading complete dossier markdown...
       const out = document.getElementById('tamper-output');
       out.classList.remove('hidden');
       if (report.valid) {
-        out.className = 'mt-4 p-4 rounded-lg bg-emerald-950/40 border border-emerald-600/40 text-xs font-mono text-emerald-300';
-        out.innerHTML = `<strong>VALIDATION PASSED</strong><br>All provenance locators, artifact schemas, and cryptographic hashes match cleanly.`;
+        out.className = 'mt-4 p-4 rounded-lg neo-box-sm bg-[#F0FDF4] border-[2px] border-black text-xs font-mono font-bold text-black';
+        out.innerHTML = `<span class="neo-badge bg-[#4ADE80] text-black px-2 py-0.5 text-xs mb-2 inline-block">VALIDATION PASSED</span><br>All provenance locators, artifact schemas, and cryptographic hashes match cleanly.`;
       } else {
-        out.className = 'mt-4 p-4 rounded-lg bg-rose-950/40 border border-rose-600/40 text-xs font-mono text-rose-300';
-        out.innerHTML = `<strong>VALIDATION FAILED (${report.errors.length} errors)</strong><br>` + report.errors.map(e => `&bull; ${e}`).join('<br>');
+        out.className = 'mt-4 p-4 rounded-lg neo-box-sm bg-[#FEF2F2] border-[2px] border-black text-xs font-mono font-bold text-black';
+        out.innerHTML = `<span class="neo-badge bg-[#FF6B6B] text-black px-2 py-0.5 text-xs mb-2 inline-block">VALIDATION FAILED (${report.errors.length} errors)</span><br>` + report.errors.map(e => `&bull; ${e}`).join('<br>');
       }
       loadSelectedCase();
     }
@@ -757,15 +897,15 @@ Loading complete dossier markdown...
       
       const out = document.getElementById('tamper-output');
       out.classList.remove('hidden');
-      out.className = 'mt-4 p-4 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-slate-300';
-      out.innerHTML = `<strong>Action: ${action.toUpperCase()}</strong><br>${data.message}`;
+      out.className = 'mt-4 p-4 rounded-lg neo-box-sm bg-[#FFFDF5] border-[2px] border-black text-xs font-mono font-bold text-black';
+      out.innerHTML = `<span class="neo-badge bg-[#FFE600] text-black px-2 py-0.5 text-xs mb-2 inline-block">ACTION: ${action.toUpperCase()}</span><br>${data.message}`;
       loadSelectedCase();
     }
 
     async function runLiveDemo() {
       const btn = document.getElementById('demo-btn');
       const originalText = btn.innerHTML;
-      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Running Demo...`;
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> <span>Running Demo...</span>`;
       btn.disabled = true;
 
       try {
