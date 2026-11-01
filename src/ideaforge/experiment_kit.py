@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from .models import EvidenceMatrix, ExperimentPlan
+from .rendering import compute_epistemic_ledger, format_epistemic_ledger
 
 FIXED_ANALYSIS = '''"""Exploratory descriptive analysis; this file does not infer causality."""
 from __future__ import annotations
@@ -88,13 +89,14 @@ def _slug(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9_-]+", "_", value).strip("_") or "experiment"
 
 
-def render_card(plan: ExperimentPlan) -> str:
+def render_card(plan: ExperimentPlan, epistemic_summary: str = "") -> str:
     variables = lambda items: "\n".join(f"- {item.name} ({item.unit})" for item in items)
     list_items = lambda items: (
         "\n".join(f"{i}. {value}" for i, value in enumerate(items, 1))
         if items
         else "- None recorded."
     )
+    ledger_line = f"- Epistemic Ledger: {epistemic_summary}\n" if epistemic_summary else ""
     return f"""# Experiment Card — {plan.title}
 
 - Case ID: {plan.case_id}
@@ -102,7 +104,7 @@ def render_card(plan: ExperimentPlan) -> str:
 - Version: {plan.version}
 - Status: {plan.human_status}
 - Type: {plan.experiment_type.value}
-
+{ledger_line}
 ## Question
 What specific uncertainty does this experiment address?
 Distinguishes proposed hypothesis from competing alternative explanation.
@@ -211,9 +213,12 @@ def write_experiment_kit(
     decision_status: str = "PENDING_REVIEW",
     decision_rationale: str = "Awaiting human review.",
     decision_actor: str = "human",
+    epistemic_summary: str = "",
 ) -> list[Path]:
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    if not epistemic_summary and ledger and ledger.items:
+        epistemic_summary = format_epistemic_ledger(compute_epistemic_ledger(ledger))
     columns = [
         "run_id (unitless)",
         "trial_number (unitless)",
@@ -234,7 +239,7 @@ def write_experiment_kit(
         paths.append(path)
 
     card = output / "experiment_card.md"
-    card.write_text(render_card(plan), encoding="utf-8")
+    card.write_text(render_card(plan, epistemic_summary=epistemic_summary), encoding="utf-8")
     paths.append(card)
 
     template = output / "data_template.csv"

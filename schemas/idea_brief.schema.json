@@ -159,6 +159,11 @@
       "title": "Clarifying Questions",
       "type": "array"
     },
+    "confidentiality_acknowledged": {
+      "default": false,
+      "title": "Confidentiality Acknowledged",
+      "type": "boolean"
+    },
     "updated_at": {
       "format": "date-time",
       "title": "Updated At",

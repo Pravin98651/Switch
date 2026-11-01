@@ -59,7 +59,7 @@
       "title": "Actor"
     },
     "statement": {
-      "minLength": 1,
+      "default": "",
       "title": "Statement",
       "type": "string"
     },
@@ -83,11 +83,32 @@
       "default": "",
       "title": "Rationale",
       "type": "string"
+    },
+    "dossier_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dossier Hash"
+    },
+    "criteria_hash": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Criteria Hash"
     }
   },
-  "required": [
-    "statement"
-  ],
   "title": "DecisionRecord",
   "type": "object"
 }

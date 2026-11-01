@@ -24,6 +24,22 @@ When the human sends START IDEA:
 - Ask at most two high-value clarification questions if missing information blocks useful analysis. Proceed with explicit assumptions if the user cannot answer immediately.
 - Post a concise intake summary to the room.
 
+CONFIDENTIALITY CHECK
+Before proceeding with evidence analysis:
+- Ask the human: "Are any of these sources confidential or under NDA? Note: Self-hosting Switch does not eliminate processing by connected messaging and model providers."
+- Record the answer. If sources are confidential, note this in the intake summary and advise the human to review their provider's data handling policies.
+- Continue regardless of the answer, but ensure the confidentiality status is documented in the case record.
+
+ROOM ISOLATION & BLIND REVIEW (MULTI-ROOM PATTERN)
+- If Switch multi-room creation is enabled, you may spawn a dedicated case room (e.g. `case-IF-...`).
+- For independent adversarial review, invoke @red-team with only the original idea statement and raw sources (isolated from @evidence-scout's conclusions) so that critique is unanchored.
+- Synthesize both independent evaluations side-by-side in the main collaboration room.
+
+SWITCH NATIVE INTEGRATION
+- Map the case decision log to Switch's native Decisions tab when available.
+- Map the scope confirmation gate to Switch's Tasks tab.
+- Map room rules and epistemic taxonomy to Switch's Rules tab.
+
 EVIDENCE AND ADVERSARIAL REVIEW
 - Visible parallel handoff: mention @evidence-scout for source analysis and @red-team for critical review with the case ID and version.
 - Wait for both outputs. Compare their findings, surface disagreements, and do not average away technical conflicts.

@@ -328,3 +328,122 @@ def test_cli_adopt_flag(tmp_path: Path):
         ]
     )
     assert args_adopt.func(args_adopt) == 0
+
+
+def test_epistemic_ledger_computation():
+    from ideaforge.rendering import compute_epistemic_ledger, format_epistemic_ledger
+
+    meta = ArtifactMeta(case_id="IF-20261101-001", version=1, producer="test")
+    evidence = EvidenceMatrix(
+        meta=meta,
+        items=[
+            EvidenceItem(
+                claim="c1", fact_type=FactType.SOURCE_BACKED, source_id="SRC-1", locator="l1"
+            ),
+            EvidenceItem(claim="c2", fact_type=FactType.INFERENCE),
+            EvidenceItem(claim="c3", fact_type=FactType.ASSUMPTION),
+            EvidenceItem(claim="c4", fact_type=FactType.ASSUMPTION),
+            EvidenceItem(claim="c5", fact_type=FactType.UNKNOWN),
+            EvidenceItem(claim="c6", fact_type=FactType.HYPOTHESIS),
+        ],
+    )
+    counts = compute_epistemic_ledger(evidence)
+    assert counts[FactType.SOURCE_BACKED.value] == 1
+    assert counts[FactType.INFERENCE.value] == 1
+    assert counts[FactType.ASSUMPTION.value] == 2
+    assert counts[FactType.UNKNOWN.value] == 1
+    assert counts[FactType.HYPOTHESIS.value] == 1
+    formatted = format_epistemic_ledger(counts)
+    assert "1 source-backed" in formatted
+    assert "1 inferences" in formatted
+    assert "2 assumptions" in formatted
+    assert "1 unknowns" in formatted
+    assert "1 hypotheses" in formatted
+
+
+def test_tamper_evident_approval_and_rejection(tmp_path: Path):
+    import json
+
+    from ideaforge.cli import build_parser
+
+    parser = build_parser()
+    ws = tmp_path / "workspace"
+    parser.parse_args(["--workspace", str(ws), "create-case", "Tamper Case"]).func(
+        parser.parse_args(["--workspace", str(ws), "create-case", "Tamper Case"])
+    )
+    case_dir = next(ws.iterdir())
+    case_id = case_dir.name
+
+    # Init artifacts
+    init_args = parser.parse_args(
+        [
+            "--workspace",
+            str(ws),
+            "init-artifacts",
+            case_id,
+            "--title",
+            "Tamper Test Title",
+            "--idea",
+            "Tamper Test Idea",
+        ]
+    )
+    assert init_args.func(init_args) == 0
+
+    # Validate passes
+    val_args = parser.parse_args(["--workspace", str(ws), "validate", case_id])
+    assert val_args.func(val_args) == 0
+
+    # Approve
+    app_args = parser.parse_args(
+        [
+            "--workspace",
+            str(ws),
+            "approve",
+            case_id,
+            "--actor",
+            "auditor",
+            "--statement",
+            "Acceptance threshold is 5dB",
+        ]
+    )
+    assert app_args.func(app_args) == 0
+
+    # Check decision record has hashes
+    decisions_path = ws / case_id / "versions" / "v001" / "decision_log.json"
+    decisions = json.loads(decisions_path.read_text(encoding="utf-8"))
+    assert len(decisions) == 1
+    assert decisions[0]["approved"] is True
+    assert decisions[0]["dossier_hash"] is not None
+    assert decisions[0]["criteria_hash"] is not None
+
+    # Validate passes while untampered
+    assert val_args.func(val_args) == 0
+
+    # Tamper with prototype plan (modify acceptance criteria threshold)
+    plan_path = ws / case_id / "versions" / "v001" / "03_prototype_plan.json"
+    plan_data = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan_data["acceptance_criteria"] = ["Modified threshold to 10dB without authorization"]
+    plan_path.write_text(json.dumps(plan_data), encoding="utf-8")
+
+    # Validate must now FAIL with exit code 1
+    assert val_args.func(val_args) == 1
+
+    # Check error report recorded the tamper failure
+    report_path = ws / case_id / "versions" / "v001" / "validation_report.json"
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["valid"] is False
+    assert any("tamper check failed" in err for err in report["errors"])
+
+
+def test_hostile_source_ingestion(tmp_path: Path):
+    hostile_source = Path("examples/demo_case/sources/demo_hostile_source.md")
+    assert hostile_source.exists()
+    store = CaseStore(tmp_path / "workspace")
+    case_id, root = store.create_case("injection-test")
+    record = ingest_file(root, hostile_source, case_id, 1)
+    assert record.extraction_status == "success"
+    assert len(record.locators) > 5
+    # The source file contains instructions, but it is treated purely as text data
+    extracted = (root / record.extracted_path).read_text(encoding="utf-8")
+    assert "Ignore all previous instructions" in extracted
+    assert "18,000 hours" in extracted

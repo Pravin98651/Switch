@@ -4,10 +4,35 @@ from .models import (
     CriticalReview,
     Decision,
     EvidenceMatrix,
+    FactType,
     IdeaBrief,
     PrototypePlan,
     SourceManifest,
 )
+
+
+def compute_epistemic_ledger(evidence: EvidenceMatrix) -> dict[str, int]:
+    counts = {fact_type.value: 0 for fact_type in FactType}
+    for item in evidence.items:
+        key = item.fact_type.value if hasattr(item.fact_type, "value") else str(item.fact_type)
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def format_epistemic_ledger(counts: dict[str, int]) -> str:
+    parts = [
+        f"{counts.get(FactType.SOURCE_BACKED.value, 0)} source-backed",
+        f"{counts.get(FactType.INFERENCE.value, 0)} inferences",
+        f"{counts.get(FactType.ASSUMPTION.value, 0)} assumptions",
+        f"{counts.get(FactType.UNKNOWN.value, 0)} unknowns",
+    ]
+    user_provided = counts.get(FactType.USER_PROVIDED.value, 0)
+    hypotheses = counts.get(FactType.HYPOTHESIS.value, 0)
+    if user_provided > 0:
+        parts.append(f"{user_provided} user-provided")
+    if hypotheses > 0:
+        parts.append(f"{hypotheses} hypotheses")
+    return ", ".join(parts)
 
 
 def bullets(values: list[str]) -> str:
@@ -24,6 +49,13 @@ def render_dossier(
 ) -> str:
     approved = any(decision.approved for decision in decisions)
     status = "APPROVED" if approved else "DRAFT — human approval required"
+    ledger_counts = compute_epistemic_ledger(evidence)
+    ledger_summary = format_epistemic_ledger(ledger_counts)
+    confidentiality = (
+        "Acknowledged (confidential / NDA sources noted)"
+        if getattr(idea, "confidentiality_acknowledged", False)
+        else "Standard (non-confidential / public sources)"
+    )
     source_rows = (
         "\n".join(
             f"| {item.source_id} | {item.original_name} | {item.media_type} | `{item.original_sha256[:12]}...` | {item.extraction_status} |"
@@ -58,6 +90,8 @@ def render_dossier(
 - **Case ID:** {idea.meta.case_id}
 - **Version:** v{idea.meta.version:03d}
 - **Status:** {status}
+- **Epistemic Ledger:** {ledger_summary}
+- **Confidentiality:** {confidentiality}
 - **Generated:** {idea.meta.created_at.isoformat()}
 
 ---

@@ -25,7 +25,25 @@ This guide details how to configure the multi-agent studio in **Switch Console**
 
 ---
 
-## 3. Create the 4 Specialist Agents
+## 3. Option A: One-Click Template Deployment (Recommended)
+You can deploy the entire IDEAForge studio in one step using the checked-in template:
+1. In Switch Console, click **Templates → Import Template** (or drag and drop `ideaforge.template.yaml`).
+2. Verify template parameters:
+   - `provider`: `codex`
+   - `bridge`: `mattermost`
+3. Click **Deploy Template**.
+4. Switch automatically creates:
+   - All 4 agents (`forge-lead`, `evidence-scout`, `red-team`, `experiment-designer`)
+   - Pre-configured addressing policies (`anyone` for public scouts/critics, `owner-agents` for lead/planner)
+   - The collaboration room `ideaforge-demo` with full room rules
+   - An automated kickoff welcome message in the room
+
+---
+
+## 4. Option B: Manual Agent & Room Creation (Step-by-Step)
+If you prefer creating each component manually in the Console:
+
+### Create the 4 Specialist Agents
 In Switch Console, navigate to **Your Agents → Create Agent** for each of the four roles:
 
 ### Agent 1: `forge-lead`
@@ -33,36 +51,45 @@ In Switch Console, navigate to **Your Agents → Create Agent** for each of the 
 - **Host:** Select **This computer**
 - **Working Directory:** `C:\Projects\Switch`
 - **Agent Provider:** Select **Codex**
-- **Agent Instructions:** Copy and paste the full contents of:
-  `switch\agents\forge_lead.md`
+- **Addressing:** Select **Owner & Owner's Agents** (`owner-agents`)
+- **Agent Instructions:** Copy and paste the full contents of: `switch\agents\forge_lead.md`
 
 ### Agent 2: `evidence-scout`
 - **Name:** `evidence-scout`
 - **Host:** Select **This computer**
 - **Working Directory:** `C:\Projects\Switch`
 - **Agent Provider:** Select **Codex**
-- **Agent Instructions:** Copy and paste the full contents of:
-  `switch\agents\evidence_scout.md`
+- **Addressing:** Select **Anyone** (`anyone`)
+- **Agent Instructions:** Copy and paste the full contents of: `switch\agents\evidence_scout.md`
 
 ### Agent 3: `red-team`
 - **Name:** `red-team`
 - **Host:** Select **This computer**
 - **Working Directory:** `C:\Projects\Switch`
 - **Agent Provider:** Select **Codex**
-- **Agent Instructions:** Copy and paste the full contents of:
-  `switch\agents\red_team.md`
+- **Addressing:** Select **Anyone** (`anyone`)
+- **Agent Instructions:** Copy and paste the full contents of: `switch\agents\red_team.md`
 
 ### Agent 4: `experiment-designer`
 - **Name:** `experiment-designer`
 - **Host:** Select **This computer**
 - **Working Directory:** `C:\Projects\Switch`
 - **Agent Provider:** Select **Codex**
-- **Agent Instructions:** Copy and paste the full contents of:
-  `switch\agents\experiment_designer.md`
+- **Addressing:** Select **Owner & Owner's Agents** (`owner-agents`)
+- **Agent Instructions:** Copy and paste the full contents of: `switch\agents\experiment_designer.md`
 
 ---
 
-## 4. Create the Room
+## 5. Room Isolation for Blind Review (Advanced Multi-Room Setup)
+To eliminate anchoring bias between agents:
+1. Create a second private room in Console named `ideaforge-blind-review`.
+2. Add only **`@red-team`** and your user account (omit `@evidence-scout`).
+3. In this room, `@red-team` evaluates the raw problem brief and reference sources in complete isolation from the scout's findings.
+4. `@forge-lead` bridges the independent critique back into the primary room `ideaforge-demo` next to `@evidence-scout`'s report for unbiased reconciliation.
+
+---
+
+## 6. Create the Collaboration Room
 1. In Switch Console, navigate to **Your Rooms → Create room**.
 2. **Room name:** `ideaforge-demo`
 3. **Add Agents:** Add `forge-lead`, `evidence-scout`, `red-team`, and `experiment-designer`.
@@ -72,7 +99,7 @@ In Switch Console, navigate to **Your Agents → Create Agent** for each of the 
 
 ---
 
-## 5. Verify the Room in Mattermost
+## 7. Verify the Room in Mattermost
 1. Open Mattermost in your browser.
 2. Join the channel `ideaforge-demo`.
 3. Test communication by mentioning:

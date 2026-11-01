@@ -147,7 +147,13 @@ def cmd_init(args: argparse.Namespace) -> int:
     meta = ArtifactMeta(case_id=args.case_id, version=version, producer="ideaforge.cli")
     write_json_model(
         paths["idea"],
-        IdeaBrief(meta=meta, title=args.title, original_idea=args.idea, problem=args.problem),
+        IdeaBrief(
+            meta=meta,
+            title=args.title,
+            original_idea=args.idea,
+            problem=args.problem,
+            confidentiality_acknowledged=getattr(args, "confidential", False),
+        ),
     )
     write_json_model(paths["evidence"], EvidenceMatrix(meta=meta))
     write_json_model(paths["review"], CriticalReview(meta=meta))
@@ -171,9 +177,17 @@ def cmd_validate(args: argparse.Namespace) -> int:
     version, version_path = store.version_path(args.case_id, args.version)
     paths = artifact_paths(version_path)
     errors: list[str] = []
+    manifest = None
     try:
-        manifest = load_model(
-            store.case_path(args.case_id) / "sources" / "source_manifest.json", SourceManifest
+        manifest_path = store.case_path(args.case_id) / "sources" / "source_manifest.json"
+        manifest = (
+            load_model(manifest_path, SourceManifest)
+            if manifest_path.exists()
+            else SourceManifest(
+                meta=ArtifactMeta(
+                    case_id=args.case_id, version=version, producer="ideaforge.validation"
+                )
+            )
         )
         errors.extend(
             validate_artifacts(
@@ -188,6 +202,74 @@ def cmd_validate(args: argparse.Namespace) -> int:
         )
     except FileNotFoundError as error:
         errors.append(f"missing required artifact: {error.filename}")
+
+    # Tamper-evident check: verify approved dossier and criteria hashes
+    if paths["decisions"].exists():
+        try:
+            decisions_data = json.loads(paths["decisions"].read_text(encoding="utf-8"))
+            for d in decisions_data:
+                if d.get("approved") and d.get("dossier_hash"):
+                    expected_dossier_hash = d["dossier_hash"]
+                    expected_criteria_hash = d.get("criteria_hash")
+
+                    # Check acceptance criteria hash
+                    if expected_criteria_hash and paths["plan"].exists():
+                        try:
+                            curr_plan = load_model(paths["plan"], PrototypePlan)
+                            curr_crit = "\n".join(curr_plan.acceptance_criteria)
+                            curr_crit_hash = hashlib.sha256(curr_crit.encode("utf-8")).hexdigest()
+                            if curr_crit_hash != expected_criteria_hash:
+                                errors.append(
+                                    f"tamper check failed: acceptance criteria modified after approval (expected {expected_criteria_hash[:12]}..., got {curr_crit_hash[:12]}...)"
+                                )
+                        except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+                            errors.append(
+                                f"tamper check failed: could not verify acceptance criteria ({e})"
+                            )
+
+                    # Check dossier.md file hash if file exists
+                    dossier_file = version_path / "dossier.md"
+                    if dossier_file.exists():
+                        actual_file_hash = hashlib.sha256(
+                            dossier_file.read_text(encoding="utf-8").encode("utf-8")
+                        ).hexdigest()
+                        if actual_file_hash != expected_dossier_hash:
+                            errors.append(
+                                f"tamper check failed: dossier.md modified after approval (expected {expected_dossier_hash[:12]}..., got {actual_file_hash[:12]}...)"
+                            )
+
+                    # Re-render dossier from current artifacts and check hash
+                    try:
+                        temp_decisions = [Decision.model_validate(item) for item in decisions_data]
+                        curr_rendered = render_dossier(
+                            load_model(paths["idea"], IdeaBrief),
+                            manifest
+                            or SourceManifest(
+                                meta=ArtifactMeta(
+                                    case_id=args.case_id,
+                                    version=version,
+                                    producer="ideaforge.validation",
+                                )
+                            ),
+                            load_model(paths["evidence"], EvidenceMatrix),
+                            load_model(paths["review"], CriticalReview),
+                            load_model(paths["plan"], PrototypePlan),
+                            temp_decisions,
+                        )
+                        curr_rendered_hash = hashlib.sha256(
+                            curr_rendered.encode("utf-8")
+                        ).hexdigest()
+                        if curr_rendered_hash != expected_dossier_hash:
+                            errors.append(
+                                "tamper check failed: underlying artifacts modified after approval (hash mismatch with approved dossier)"
+                            )
+                    except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+                        errors.append(
+                            f"tamper check failed: could not re-render dossier for verification ({e})"
+                        )
+        except (json.JSONDecodeError, OSError, ValueError, KeyError) as e:
+            errors.append(f"tamper check failed: invalid decision log ({e})")
+
     report = ValidationReport(
         meta=ArtifactMeta(
             case_id=args.case_id,
@@ -308,6 +390,23 @@ def cmd_approve(args: argparse.Namespace) -> int:
         raise SystemExit("approval blocked: validation report is invalid")
     if report.meta.input_hashes != artifact_hashes(paths):
         raise SystemExit("approval blocked: artifacts changed since validation; run validate again")
+
+    manifest_path = store.case_path(args.case_id) / "sources" / "source_manifest.json"
+    manifest = (
+        load_model(manifest_path, SourceManifest)
+        if manifest_path.exists()
+        else SourceManifest(
+            meta=ArtifactMeta(case_id=args.case_id, version=version, producer="ideaforge.cli")
+        )
+    )
+    idea = load_model(paths["idea"], IdeaBrief)
+    evidence = load_model(paths["evidence"], EvidenceMatrix)
+    review = load_model(paths["review"], CriticalReview)
+    plan = load_model(paths["plan"], PrototypePlan)
+
+    criteria_str = "\n".join(plan.acceptance_criteria)
+    criteria_hash = hashlib.sha256(criteria_str.encode("utf-8")).hexdigest()
+
     path = paths["decisions"]
     decisions = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
     decision = Decision(
@@ -317,7 +416,17 @@ def cmd_approve(args: argparse.Namespace) -> int:
         approved=True,
         decision=HumanDecision.APPROVE_EXPERIMENT,
         rationale=args.statement,
+        criteria_hash=criteria_hash,
     )
+
+    all_decisions = [Decision.model_validate(item) for item in decisions] + [decision]
+    dossier_content = render_dossier(idea, manifest, evidence, review, plan, all_decisions)
+    dossier_hash = hashlib.sha256(dossier_content.encode("utf-8")).hexdigest()
+    decision.dossier_hash = dossier_hash
+
+    # Write approved dossier
+    (version_path / "dossier.md").write_text(dossier_content, encoding="utf-8")
+
     decisions.append(decision.model_dump(mode="json"))
     atomic_json(path, decisions)
 
@@ -348,16 +457,52 @@ def cmd_decide(args: argparse.Namespace) -> int:
     store = store_for(args)
     version, version_path = store.version_path(args.case_id, args.version)
     paths = artifact_paths(version_path)
+    approved = args.decision == HumanDecision.APPROVE_EXPERIMENT.value
+    criteria_hash = None
+    dossier_hash = None
+
+    if approved and paths["plan"].exists():
+        plan = load_model(paths["plan"], PrototypePlan)
+        criteria_str = "\n".join(plan.acceptance_criteria)
+        criteria_hash = hashlib.sha256(criteria_str.encode("utf-8")).hexdigest()
+
     decision = Decision(
         case_id=args.case_id,
         actor=args.actor,
         statement=args.rationale,
         rationale=args.rationale,
         decision=HumanDecision(args.decision),
-        approved=args.decision == HumanDecision.APPROVE_EXPERIMENT.value,
+        approved=approved,
+        criteria_hash=criteria_hash,
     )
     log = paths["decisions"]
     previous = json.loads(log.read_text(encoding="utf-8")) if log.exists() else []
+
+    if (
+        approved
+        and paths["idea"].exists()
+        and paths["evidence"].exists()
+        and paths["review"].exists()
+        and paths["plan"].exists()
+    ):
+        manifest_path = store.case_path(args.case_id) / "sources" / "source_manifest.json"
+        manifest = (
+            load_model(manifest_path, SourceManifest)
+            if manifest_path.exists()
+            else SourceManifest(
+                meta=ArtifactMeta(case_id=args.case_id, version=version, producer="ideaforge.cli")
+            )
+        )
+        idea = load_model(paths["idea"], IdeaBrief)
+        evidence = load_model(paths["evidence"], EvidenceMatrix)
+        review = load_model(paths["review"], CriticalReview)
+        plan = load_model(paths["plan"], PrototypePlan)
+        all_decisions = [Decision.model_validate(item) for item in previous] + [decision]
+        dossier_content = render_dossier(idea, manifest, evidence, review, plan, all_decisions)
+        dossier_hash = hashlib.sha256(dossier_content.encode("utf-8")).hexdigest()
+        decision.dossier_hash = dossier_hash
+        (version_path / "dossier.md").write_text(dossier_content, encoding="utf-8")
+
     previous.append(decision.model_dump(mode="json"))
     atomic_json(log, previous)
     kit_dir = version_path / "experiment_kit"
@@ -512,6 +657,11 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--idea", required=True)
     init.add_argument("--problem", default=None)
     init.add_argument("--version", type=int)
+    init.add_argument(
+        "--confidential",
+        action="store_true",
+        help="flag that confidential/NDA sources are involved",
+    )
     init.set_defaults(func=cmd_init)
 
     imported = sub.add_parser(

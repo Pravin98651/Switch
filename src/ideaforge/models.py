@@ -64,6 +64,7 @@ class IdeaBrief(StrictModel):
     known_unknowns: list[str] = Field(default_factory=list)
     system_boundary: str | None = None
     clarifying_questions: list[str] = Field(default_factory=list)
+    confidentiality_acknowledged: bool = False
     updated_at: datetime = Field(default_factory=utc_now)
 
 
@@ -242,6 +243,8 @@ class DecisionRecord(StrictModel):
     approved: bool = False
     decision: HumanDecision | None = None
     rationale: str = ""
+    dossier_hash: str | None = None
+    criteria_hash: str | None = None
 
 
 # Alias Decision to DecisionRecord for backward compatibility
