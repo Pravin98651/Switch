@@ -190,7 +190,7 @@ python analysis.py data_template.csv
 
 ### Automated Test Suite
 ```powershell
-# Run 17 automated unit, integration, and security tests
+# Run 18 automated unit, integration, and security tests
 python -m pytest
 
 # Code quality, linting, and style formatting checks
