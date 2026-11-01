@@ -90,73 +90,104 @@ def _slug(value: str) -> str:
 
 
 def render_card(plan: ExperimentPlan, epistemic_summary: str = "") -> str:
-    variables = lambda items: "\n".join(f"- {item.name} ({item.unit})" for item in items)
     list_items = lambda items: (
         "\n".join(f"{i}. {value}" for i, value in enumerate(items, 1))
         if items
         else "- None recorded."
     )
-    ledger_line = f"- Epistemic Ledger: {epistemic_summary}\n" if epistemic_summary else ""
-    return f"""# Experiment Card — {plan.title}
+    ledger_line = (
+        f"- **Epistemic Ledger:** `{epistemic_summary}`\n"
+        if epistemic_summary
+        else "- **Epistemic Ledger:** `Computed from Evidence Matrix`\n"
+    )
 
-- Case ID: {plan.case_id}
-- Experiment ID: {plan.experiment_id}
-- Version: {plan.version}
-- Status: {plan.human_status}
-- Type: {plan.experiment_type.value}
+    var_rows = []
+    for item in plan.independent_variables:
+        var_rows.append(f"| Independent (What changes) | `{item.name}` | `{item.unit}` |")
+    for item in plan.dependent_variables:
+        var_rows.append(f"| Dependent (What is measured) | `{item.name}` | `{item.unit}` |")
+    for item in plan.control_variables:
+        var_rows.append(f"| Control (What stays constant) | `{item.name}` | `{item.unit}` |")
+    vars_table = "\n".join(var_rows)
+
+    return f"""# Experiment Card -- {plan.title}
+
+> **PRIMARY DELIVERABLE -- MINIMUM DECISIVE EXPERIMENT**  
+> *Execute this protocol on the test bench. The full 20+ section dossier (`dossier.md`) serves as the comprehensive technical validation appendix.*
+
+- **Case ID:** {plan.case_id}
+- **Experiment ID:** {plan.experiment_id}
+- **Version:** v{plan.version:03d}
+- **Status:** `{plan.human_status}`
+- **Experiment Type:** `{plan.experiment_type.value}`
 {ledger_line}
-## Question
-What specific uncertainty does this experiment address?
-Distinguishes proposed hypothesis from competing alternative explanation.
+---
 
-## Hypothesis
-{plan.hypothesis}
+## 1. Core Question & Distinction
+**What specific uncertainty does this test address?**  
+Distinguishes the proposed physical mechanism from plausible alternative explanations before building full hardware.
 
-## Competing explanation
-{plan.alternative_explanation}
+- **Proposed Hypothesis:**  
+  > {plan.hypothesis}
+- **Competing Alternative Explanation:**  
+  > {plan.alternative_explanation}
+{"- **MDE Rationale:** " + plan.mde_rationale if plan.mde_rationale else ""}
 
-## Variables
-### What changes (Independent)
-{variables(plan.independent_variables)}
+---
 
-### What is measured (Dependent)
-{variables(plan.dependent_variables)}
+## 2. Variables & Instrumentation
+| Category | Variable Name | Unit |
+|:---|:---|:---|
+{vars_table}
 
-### What stays constant (Control)
-{variables(plan.control_variables)}
+---
 
-## Equipment
+## 3. Equipment & Bill of Materials
 {list_items(plan.equipment)}
 
-## Setup and calibration
+---
+
+## 4. Setup, Calibration & Protocol
+### Calibration Steps
 {list_items(plan.calibration_steps)}
 
-## Procedure
+### Step-by-Step Procedure
 {list_items(plan.procedure)}
 
-## Decision rules
-- Supports the hypothesis if: {plan.criteria.supports}
-- Weakens/rejects the hypothesis if: {plan.criteria.weakens}
-- Inconclusive if: {plan.criteria.inconclusive}
+---
 
-## Data file
-- CSV Template: `data_template.csv`
-- Analysis Method: {plan.analysis_method}
-- Fixed Analysis Starter: `analysis.py` (exploratory descriptive statistics only; no causal claims)
+## 5. Decision Rules (Go / No-Go Criteria)
+| Outcome | Empirical Result | Next Action |
+|:---|:---|:---|
+| **SUPPORTS** | {plan.criteria.supports} | Proceed to integrated prototype |
+| **WEAKENS / REJECTS** | {plan.criteria.weakens} | Falsify mechanism; revise or abort |
+| **INCONCLUSIVE** | {plan.criteria.inconclusive} | Recalibrate instruments or increase SNR |
 
-## Safety and limitations
-### Safety Notes
+---
+
+## 6. Data Collection & Fixed Analysis
+- **CSV Data Template:** `data_template.csv`
+- **Analysis Method:** {plan.analysis_method}
+- **Analysis Starter:** `python analysis.py data_template.csv` *(fixed descriptive statistics; no model-generated arbitrary code)*
+
+---
+
+## 7. Safety Notes & Known Limitations
+### Safety Requirements
 {list_items(plan.safety_notes or ["No safety review recorded; competent human review required."])}
 
 ### Known Limitations
 {list_items(plan.limitations)}
 
-## Assumptions
+### Consequential Assumptions
 {list_items(plan.assumptions)}
 
-## Human decision
-Status: {plan.human_status}
-Decision options: APPROVE_EXPERIMENT | REQUEST_REVISION | DEFER | REJECT_EXPERIMENT
+---
+
+## 8. Human Decision
+- **Status:** `{plan.human_status}`  
+- **Registered Decision Options:** `APPROVE_EXPERIMENT` | `REQUEST_REVISION` | `DEFER` | `REJECT_EXPERIMENT`  
+*(All approvals are pre-registered with SHA-256 cryptographic hashes preventing post-decision tampering.)*
 """
 
 

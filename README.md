@@ -108,6 +108,9 @@ python -m pip install -e ".[documents,dev]"
 
 # Verify CLI
 python -m ideaforge --help
+
+# Run the full automated end-to-end demo (1-command reproduction)
+python -m ideaforge demo
 ```
 
 ---
@@ -164,6 +167,7 @@ python analysis.py data_template.csv
 
 ## 🛠️ CLI Reference
 
+- `python -m ideaforge demo`: Runs the complete automated 11-step demonstration workflow (fault injection, repair, kit build, tamper check, export).
 - `python -m ideaforge create-case <TITLE>`: Creates a new append-only case directory.
 - `python -m ideaforge ingest <CASE_ID> <FILE>`: Extracts text, hashes bytes (`SHA-256`), and registers line/page locators.
 - `python -m ideaforge status <CASE_ID>`: Displays case status, ingested sources count, artifact health, and decision state.
@@ -181,7 +185,7 @@ python analysis.py data_template.csv
 
 ### Automated Test Suite
 ```powershell
-# Run 16 automated unit, integration, and security tests
+# Run 17 automated unit, integration, and security tests
 python -m pytest
 
 # Code quality, linting, and style formatting checks

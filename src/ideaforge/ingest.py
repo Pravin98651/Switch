@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import shutil
 from pathlib import Path
 
@@ -9,6 +10,26 @@ from .models import ArtifactMeta, SourceManifest, SourceRecord
 from .storage import atomic_json
 
 TEXT_EXTENSIONS = {".txt", ".md"}
+
+INJECTION_PATTERNS = [
+    re.compile(r"ignore\s+(all\s+)?previous\s+instructions", re.IGNORECASE),
+    re.compile(r"override\s+(all\s+)?safety\s+guidelines", re.IGNORECASE),
+    re.compile(r"you\s+are\s+now\s+operating\s+in\s+unrestricted\s+mode", re.IGNORECASE),
+    re.compile(r"disregard\s+(all\s+)?prior\s+instructions", re.IGNORECASE),
+    re.compile(r"approve\s+this\s+idea\s+immediately", re.IGNORECASE),
+]
+
+
+def detect_prompt_injections(text: str) -> list[str]:
+    warnings = []
+    for line_num, line in enumerate(text.splitlines(), 1):
+        for pattern in INJECTION_PATTERNS:
+            if pattern.search(line):
+                clean_snippet = line.strip()[:60]
+                warnings.append(
+                    f"line:{line_num} Potential prompt injection detected: '{clean_snippet}'"
+                )
+    return warnings
 
 
 def sha256(path: Path) -> str:
@@ -104,6 +125,7 @@ def ingest_file(
     shutil.copy2(input_path, saved_original)
     extracted = case_root / "sources" / "extracted" / f"{original_hash}.txt"
     extracted.write_text(text, encoding="utf-8")
+    warnings = detect_prompt_injections(text)
     record = SourceRecord(
         source_id=f"SRC-{original_hash[:12].upper()}",
         original_name=input_path.name,
@@ -113,6 +135,7 @@ def ingest_file(
         extraction_status="success",
         locators=locators,
         extracted_path=str(extracted.relative_to(case_root)),
+        extraction_warnings=warnings,
     )
     items = prior.sources if manifest_path.exists() else []
     manifest = SourceManifest(

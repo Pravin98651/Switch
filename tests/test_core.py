@@ -443,7 +443,20 @@ def test_hostile_source_ingestion(tmp_path: Path):
     record = ingest_file(root, hostile_source, case_id, 1)
     assert record.extraction_status == "success"
     assert len(record.locators) > 5
+    assert len(record.extraction_warnings) > 0
+    assert any("Potential prompt injection" in w for w in record.extraction_warnings)
     # The source file contains instructions, but it is treated purely as text data
     extracted = (root / record.extracted_path).read_text(encoding="utf-8")
     assert "Ignore all previous instructions" in extracted
     assert "18,000 hours" in extracted
+
+
+def test_cli_demo_command(tmp_path: Path):
+    from ideaforge.cli import build_parser
+
+    parser = build_parser()
+    ws = tmp_path / "demo_ws"
+    args = parser.parse_args(["--workspace", str(ws), "demo"])
+    assert args.func(args) == 0
+    assert (ws).is_dir()
+    assert Path("exports/demo_conveyor_dossier.md").exists()

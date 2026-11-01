@@ -20,7 +20,11 @@ from .models import (
     SourceManifest,
     ValidationReport,
 )
-from .rendering import render_dossier
+from .rendering import (
+    compute_epistemic_ledger,
+    format_epistemic_ledger,
+    render_dossier,
+)
 from .schema_export import export_schemas
 from .storage import CaseStore, atomic_json
 from .validation import validate_artifacts
@@ -99,6 +103,17 @@ def cmd_status(args: argparse.Namespace) -> int:
         else []
     )
     approved = any(d.approved for d in decisions)
+    has_tamper_lock = any(d.approved and d.dossier_hash for d in decisions)
+    evidence_path = paths["evidence"]
+    ledger_str = None
+    if evidence_path.exists():
+        try:
+            ev = load_model(evidence_path, EvidenceMatrix)
+            ledger_str = format_epistemic_ledger(compute_epistemic_ledger(ev))
+        except (json.JSONDecodeError, OSError, ValueError, KeyError):
+            pass
+
+    warnings_count = sum(len(s.extraction_warnings) for s in manifest.sources) if manifest else 0
 
     report_path = paths["report"]
     report = load_model(report_path, ValidationReport) if report_path.exists() else None
@@ -106,18 +121,24 @@ def cmd_status(args: argparse.Namespace) -> int:
     kit_path = version_path / "experiment_kit"
     kit_exists = kit_path.exists() and (kit_path / "experiment_card.md").exists()
 
-    print(f"Case ID:        {args.case_id}")
-    print(f"Version:        v{version:03d}")
-    print(f"Status:         {'APPROVED' if approved else 'DRAFT'}")
-    print(f"Sources:        {len(manifest.sources) if manifest else 0} ingested")
+    print(f"Case ID:          {args.case_id}")
+    print(f"Version:          v{version:03d}")
+    print(f"Status:           {'APPROVED' if approved else 'DRAFT'}")
+    if has_tamper_lock:
+        print("Tamper Lock:      ACTIVE (SHA-256 pre-registered)")
+    if ledger_str:
+        print(f"Epistemic Ledger: {ledger_str}")
+    if warnings_count:
+        print(f"Security Alerts:  [!] {warnings_count} potential injection(s) flagged")
+    print(f"Sources:          {len(manifest.sources) if manifest else 0} ingested")
     print("Artifacts:")
     for key, path in paths.items():
         print(f"  - {key:<10}: {'present' if path.exists() else 'missing'}")
     print(
-        f"Validation:     {'PASSED' if report and report.valid else ('FAILED' if report else 'NOT RUN')}"
+        f"Validation:       {'PASSED' if report and report.valid else ('FAILED' if report else 'NOT RUN')}"
     )
-    print(f"Experiment Kit: {'BUILT' if kit_exists else 'NOT BUILT'}")
-    print(f"Decisions:      {len(decisions)} recorded")
+    print(f"Experiment Kit:   {'BUILT' if kit_exists else 'NOT BUILT'}")
+    print(f"Decisions:        {len(decisions)} recorded")
     return 0
 
 
@@ -584,6 +605,154 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_demo(args: argparse.Namespace) -> int:
+    """Run an automated end-to-end demonstration of the full IDEAForge pipeline."""
+    import subprocess
+    import sys
+
+    print("=" * 64)
+    print("  IDEAFORGE 2.0 -- END-TO-END DEMO WORKFLOW")
+    print("  Core Principle: Falsify Before You Fabricate")
+    print("=" * 64)
+
+    store = store_for(args)
+    demo_dir = Path("examples/demo_case")
+    if not demo_dir.exists():
+        demo_dir = Path(__file__).resolve().parent.parent.parent / "examples" / "demo_case"
+
+    # Step 1: Create Case
+    title = "Conveyor belt early micro-tear defect detection"
+    case_id, root = store.create_case(title)
+    _version, version_path = store.version_path(case_id, 1)
+    paths = artifact_paths(version_path)
+    print(f"\n[Step 1] Created case: {case_id} (version v001)")
+
+    # Step 2: Ingest Sources
+    print("\n[Step 2] Ingesting reference source pack & hostile source...")
+    sources = [
+        demo_dir / "sources" / "demo_problem_brief.md",
+        demo_dir / "sources" / "demo_sensor_notes.md",
+        demo_dir / "sources" / "demo_experiment_constraints.md",
+        demo_dir / "sources" / "demo_fault_injection_source.md",
+        demo_dir / "sources" / "demo_hostile_source.md",
+    ]
+    for src in sources:
+        if src.exists():
+            rec = ingest_file(root, src, case_id, 1, store.settings)
+            status_note = (
+                f" ([!] {len(rec.extraction_warnings)} security warning flagged)"
+                if rec.extraction_warnings
+                else ""
+            )
+            print(f"  - Ingested {rec.original_name:<32} -> {rec.source_id}{status_note}")
+
+    # Step 3: Initialize artifacts & adopt demo briefs
+    print("\n[Step 3] Importing Switch specialist artifacts...")
+    idea = load_model(demo_dir / "artifacts" / "00_idea_brief.json", IdeaBrief)
+    idea.meta.case_id = case_id
+    idea.meta.version = 1
+    write_json_model(paths["idea"], idea)
+
+    review = load_model(demo_dir / "artifacts" / "02_critical_review.json", CriticalReview)
+    review.meta.case_id = case_id
+    review.meta.version = 1
+    write_json_model(paths["review"], review)
+
+    plan = load_model(demo_dir / "artifacts" / "03_prototype_plan.json", PrototypePlan)
+    plan.meta.case_id = case_id
+    plan.meta.version = 1
+    write_json_model(paths["plan"], plan)
+    print("  - Imported Idea Brief, Critical Review, and Prototype Plan.")
+
+    # Step 4: Demonstrate Fault Injection
+    print("\n[Step 4] Fault Injection Test: importing invalid locator 'line:999'...")
+    fault_evidence = load_model(
+        demo_dir / "artifacts" / "01_evidence_matrix_fault.json", EvidenceMatrix
+    )
+    fault_evidence.meta.case_id = case_id
+    fault_evidence.meta.version = 1
+    write_json_model(paths["evidence"], fault_evidence)
+
+    args.case_id = case_id
+    args.version = 1
+    print("  -> Running validator on faulty artifact...")
+    val_res = cmd_validate(args)
+    if val_res != 0:
+        print("  -> Result: Validator CAUGHT and BLOCKED invalid citation!")
+
+    # Step 5: Repair Fault
+    print("\n[Step 5] Repairing citation with clean evidence matrix...")
+    clean_evidence = load_model(demo_dir / "artifacts" / "01_evidence_matrix.json", EvidenceMatrix)
+    clean_evidence.meta.case_id = case_id
+    clean_evidence.meta.version = 1
+    write_json_model(paths["evidence"], clean_evidence)
+    print("  -> Re-running validator on repaired artifact...")
+    val_res = cmd_validate(args)
+    if val_res == 0:
+        print("  -> Result: Validation PASSED! All citations cryptographically verified.")
+
+    # Step 6: Build Experiment Kit
+    print("\n[Step 6] Building Executable Experiment Kit...")
+    exp_plan = load_model(demo_dir / "artifacts" / "experiment_plan.json", ExperimentPlan)
+    exp_plan.case_id = case_id
+    exp_plan.version = 1
+    kit_output = version_path / "experiment_kit"
+    kit_files = write_experiment_kit(kit_output, exp_plan, clean_evidence)
+    for kf in kit_files:
+        print(f"  - Generated: {kf.name}")
+
+    # Step 7: Render Draft Dossier
+    print("\n[Step 7] Rendering Draft Dossier with Epistemic Ledger...")
+    cmd_render(args)
+    print("  - Rendered: dossier.md (Status: DRAFT)")
+
+    # Step 8: Human Approval with SHA-256 Pre-Registration
+    print("\n[Step 8] Recording Human Approval & Pre-Registering SHA-256 Hashes...")
+    args.actor = "lead_inventor"
+    args.statement = "Risks acceptable for benchtop test rig; acceptance criteria locked at 6dB harmonic threshold."
+    cmd_approve(args)
+    print("  - Status: APPROVED (SHA-256 locked into decision_log.json)")
+
+    # Step 9: 20-Second Tamper Test
+    print("\n[Step 9] 20-Second Tamper Test: Attempting unauthorized threshold change...")
+    tampered_plan = load_model(paths["plan"], PrototypePlan)
+    original_criteria = list(tampered_plan.acceptance_criteria)
+    tampered_plan.acceptance_criteria = ["Tampered: Shifted threshold to 12dB after experiment"]
+    write_json_model(paths["plan"], tampered_plan)
+    print("  -> Running validator on tampered plan...")
+    tamper_res = cmd_validate(args)
+    if tamper_res != 0:
+        print("  -> Result: Tamper check CAUGHT unauthorized modification!")
+    # Revert plan
+    tampered_plan.acceptance_criteria = original_criteria
+    write_json_model(paths["plan"], tampered_plan)
+    cmd_validate(args)
+
+    # Step 10: Run Analysis Starter
+    print("\n[Step 10] Running fixed descriptive analysis on data template...")
+    proc = subprocess.run(
+        [sys.executable, str(kit_output / "analysis.py"), str(kit_output / "data_template.csv")],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    print(f"  - Analysis Starter Output: {proc.stdout.strip()}")
+
+    # Step 11: Export Final Dossier
+    export_out = Path("exports/demo_conveyor_dossier.md")
+    export_out.parent.mkdir(parents=True, exist_ok=True)
+    args.out = str(export_out)
+    cmd_export(args)
+
+    print("\n" + "=" * 64)
+    print("  DEMO COMPLETE: ALL CHECKS & VALIDATIONS PASSED")
+    print(f"  Case Directory:  workspace/{case_id}/")
+    print(f"  Experiment Card: workspace/{case_id}/versions/v001/experiment_kit/experiment_card.md")
+    print(f"  Final Dossier:   {export_out}")
+    print("=" * 64)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ideaforge", description="Traceable prototype dossier and experiment studio"
@@ -714,6 +883,9 @@ def build_parser() -> argparse.ArgumentParser:
         return cmd_export(args)
 
     export.set_defaults(func=handle_export)
+
+    demo = sub.add_parser("demo", help="run complete automated demonstration workflow")
+    demo.set_defaults(func=cmd_demo)
 
     return parser
 

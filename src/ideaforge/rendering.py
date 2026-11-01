@@ -99,7 +99,8 @@ def render_dossier(
 ## 1. Executive summary
 
 IDEAForge is a human-led invention experiment studio: **Falsify Before You Fabricate**.
-This dossier consolidates the user's idea, ingested source evidence, independent red-team critique, prototype plan, and minimal decisive experiment specification.
+The primary actionable deliverable of this workflow is the one-page **Experiment Card** (`experiment_card.md`), located in the Experiment Kit.
+This comprehensive dossier serves as the authoritative **technical verification appendix**, consolidating the user's idea, ingested source evidence, deterministic epistemic ledger, independent red-team critique, prototype plan, and minimal decisive experiment specification.
 *Notice: This document provides technical exploration and experiment planning only. It does not provide legal conclusions regarding patentability, novelty, freedom to operate, or regulatory compliance.*
 
 ## 2. User's original idea (verbatim)
