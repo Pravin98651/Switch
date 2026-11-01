@@ -111,6 +111,9 @@ python -m ideaforge --help
 
 # Run the full automated end-to-end demo (1-command reproduction)
 python -m ideaforge demo
+
+# Launch the interactive Web Studio frontend (opens http://127.0.0.1:8765)
+python -m ideaforge serve
 ```
 
 ---
@@ -167,6 +170,8 @@ python analysis.py data_template.csv
 
 ## 🛠️ CLI Reference
 
+- `python -m ideaforge serve [--port 8765]`: Launches the interactive Web Studio frontend dashboard.
+- `python -m ideaforge ui`: Quick alias to launch the Web Studio frontend.
 - `python -m ideaforge demo`: Runs the complete automated 11-step demonstration workflow (fault injection, repair, kit build, tamper check, export).
 - `python -m ideaforge create-case <TITLE>`: Creates a new append-only case directory.
 - `python -m ideaforge ingest <CASE_ID> <FILE>`: Extracts text, hashes bytes (`SHA-256`), and registers line/page locators.

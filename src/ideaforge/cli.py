@@ -753,6 +753,13 @@ def cmd_demo(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_serve(args: argparse.Namespace) -> int:
+    from .server import run_server
+
+    run_server(host=args.host, port=args.port, workspace=args.workspace)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ideaforge", description="Traceable prototype dossier and experiment studio"
@@ -886,6 +893,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     demo = sub.add_parser("demo", help="run complete automated demonstration workflow")
     demo.set_defaults(func=cmd_demo)
+
+    serve = sub.add_parser("serve", help="launch IDEAForge Web Studio frontend")
+    serve.add_argument("--host", default="127.0.0.1", help="server bind host (default: 127.0.0.1)")
+    serve.add_argument("--port", type=int, default=8765, help="server port (default: 8765)")
+    serve.set_defaults(func=cmd_serve)
+
+    ui_cmd = sub.add_parser("ui", help="launch IDEAForge Web Studio frontend (alias for serve)")
+    ui_cmd.add_argument("--host", default="127.0.0.1", help="server bind host (default: 127.0.0.1)")
+    ui_cmd.add_argument("--port", type=int, default=8765, help="server port (default: 8765)")
+    ui_cmd.set_defaults(func=cmd_serve)
 
     return parser
 

@@ -460,3 +460,22 @@ def test_cli_demo_command(tmp_path: Path):
     assert args.func(args) == 0
     assert (ws).is_dir()
     assert Path("exports/demo_conveyor_dossier.md").exists()
+
+
+def test_server_api_routes(tmp_path: Path):
+    from ideaforge.server import StudioAPI
+    from ideaforge.storage import CaseStore
+
+    store = CaseStore(tmp_path / "workspace")
+    case_id, _root = store.create_case("Server API Test")
+    api = StudioAPI(store)
+
+    cases = api.list_cases()
+    assert len(cases) == 1
+    assert cases[0]["case_id"] == case_id
+
+    # Get case details
+    details = api.get_case(case_id)
+    assert details["case_id"] == case_id
+    assert details["status"] == "DRAFT"
+    assert "epistemic_ledger" in details
