@@ -3,10 +3,31 @@
 > **Falsify Before You Fabricate.**  
 > *IDEAForge is a lab team in a Switch room: AI specialist agents that read supplied sources, challenge each other's assumptions, and cite only what can be cryptographically checked—while the human inventor controls the scope and makes the final decision.*
 
+[![Tests](https://img.shields.io/badge/tests-18%20passed-brightgreen)](tests/test_core.py)
+[![Ruff](https://img.shields.io/badge/ruff-passing-blue)](pyproject.toml)
+[![Switch](https://img.shields.io/badge/Switch-template%20ready-orange)](ideaforge.template.yaml)
+[![Track](https://img.shields.io/badge/Track%2002-Best%20Personal%20Workflow-purple)](https://www.wemakedevs.org/hackathons/switch)
+
+---
+
+## ⚡ Clone & Reproduce in 60 Seconds
+
+```powershell
+git clone https://github.com/Pravin98651/Switch.git
+cd Switch
+python -m venv .venv; .\.venv\Scripts\Activate.ps1
+pip install -e ".[documents,dev]"
+python -m pytest                    # 18 tests pass
+python -m ideaforge demo            # full 11-step demo, exit 0
+python -m ideaforge serve           # Web Studio at http://127.0.0.1:8765
+```
+
+> **Switch one-click deploy:** Open Switch Console → Load Template → select `ideaforge.template.yaml` → four agents and a room appear instantly.
+
 ---
 
 ## 🏆 Hackathon Track Fit
-- **Primary Track:** **Track 02 — Best Personal or Creative Workflow** (Flip the Switch Hackathon)
+- **Primary Track:** **Track 02 — Best Personal or Creative Workflow** (Flip the Switch Hackathon, Nov 4–7 2026)
 - **Why Track 02:** Turning an invention concept into a testable prototype is a deeply personal creative engineering journey. Rather than acting as a generic chatbot that produces ungrounded text, IDEAForge structures the maker's notebook, attacks risky assumptions with adversarial review, and produces an executable **Experiment Kit** to de-risk the idea before hardware fabrication.
 
 ---
@@ -118,6 +139,39 @@ python -m ideaforge serve
 
 ---
 
+## 🖥️ Web Studio — Interactive Neobrutalism Dashboard
+
+Launch with `python -m ideaforge serve` then open **http://127.0.0.1:8765**.
+
+| Tab | What you see |
+|---|---|
+| **Switch Room Feed** | Live agent dialogue with real-time send box — mirrors what a Switch room looks like |
+| **Experiment Card** | Minimum Decisive Experiment spec + live trial data logger |
+| **Claim Ledger** | Full evidence matrix with filter/search by label; clickable Epistemic Ledger badges |
+| **Red-Team Critique** | Adversarial findings, competing mechanisms, and failure conditions |
+| **Sources & Security** | SHA-256 hashes, locator index, prompt-injection warnings with Ingest modal |
+| **Full Dossier** | 20+ section rendered Markdown dossier |
+| **Tamper-Evident Lab** | 4-step interactive pipeline: Lock → Mutate → Fail → Restore |
+
+**Live REST API** (zero external dependencies, stdlib only):
+
+```
+GET  /api/cases                        → list all cases with status
+GET  /api/cases/<id>                   → full case detail
+POST /api/cases                        → create a new case {title, idea}
+POST /api/cases/<id>/ingest            → ingest source text, returns locators + injection warnings
+POST /api/cases/<id>/claims            → add a claim to the ledger
+GET  /api/cases/<id>/room              → Switch room feed (SSE-style JSON)
+POST /api/cases/<id>/room              → send a message to the room
+GET  /api/cases/<id>/csv               → export trial data as CSV
+GET  /api/validate/<id>                → tamper-check the approved dossier
+POST /api/approve/<id>                 → lock dossier with SHA-256
+POST /api/tamper/<id>                  → mutate one threshold (demo only)
+GET  /api/demo                         → run full 11-step demo, returns transcript
+```
+
+---
+
 ## 🔬 End-to-End Demo: Conveyor Belt Early Defect Detection
 
 This scenario investigates whether high-frequency acoustic emissions (>20 kHz) and vibration signals can detect an early conveyor belt micro-tear before visible failure, distinguishing it from roller speed-dependent harmonics.
@@ -219,3 +273,32 @@ Because AI agent workflows can suffer from non-determinism, we ran the full end-
 - **No Arbitrary Code Execution:** The starter script `analysis.py` contains fixed, deterministic descriptive statistics code only. No model-generated code is ever executed.
 - **Physical Safety:** Experiment plans require safety hazard reviews, emergency stop controls, and benchtop boundaries.
 - **Non-Legal Notice:** IDEAForge provides technical experiment planning only. It does not provide legal opinions on patentability, novelty, infringement, or filing readiness.
+
+---
+
+## 📂 Project Structure
+
+```
+Switch/
+├── src/ideaforge/
+│   ├── cli.py              # CLI entry point (demo, serve, validate, approve, decide …)
+│   ├── server.py           # Zero-dependency REST API + SPA server
+│   ├── models.py           # Pydantic models with tamper-evident hashes
+│   ├── rendering.py        # Dossier renderer + epistemic ledger
+│   ├── experiment_kit.py   # Experiment Card + kit file generator
+│   ├── ingest.py           # Source ingestion + prompt injection detection
+│   └── web/index.html      # Neobrutalism Web Studio SPA
+├── ideaforge.template.yaml # Switch one-click 4-agent template
+├── examples/demo_case/     # Demo sources, artifacts, hostile source
+├── workspace/              # Live cases (IF-20261101-001 … -011)
+├── tests/test_core.py      # 18 automated tests
+└── docs/
+    ├── SWITCH_SETUP.md     # Switch Console setup guide (Option A + B)
+    ├── DEMO_SCRIPT.md      # Timed 3-min video script
+    ├── BLOG_POST.md        # Submission blog post draft
+    └── SECURITY_AND_PRIVACY.md
+```
+
+---
+
+*Built for the [Flip the Switch Hackathon](https://www.wemakedevs.org/hackathons/switch) — Nov 4–7, 2026 · Track 02: Best Personal or Creative Workflow*
