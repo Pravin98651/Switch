@@ -10,6 +10,40 @@
 
 ---
 
+## 🎯 What IDEAForge Is
+
+> **IDEAForge — An AI engineering collaboration system that transforms technical ideas into evidence-backed, experimentally testable prototypes through human-agent teamwork in Switch.**
+
+Four specialist AI agents argue about your invention in a Switch room so you don't build the wrong thing.
+
+| Agent | Role | Output |
+|---|---|---|
+| `@forge-lead` | Orchestrator & human checkpoint | Case intake, delegation, approval gate |
+| `@evidence-scout` | Source analyst | Evidence matrix with `SRC-001 line:N` citations |
+| `@red-team` | Adversarial critic | Failure modes, competing mechanisms, unresolved assumptions |
+| `@experiment-designer` | Test engineer | Minimum Decisive Experiment, BOM, procedure, decision rules |
+
+Each agent has a **distinct output contract**. They can — and should — disagree. The human decides what to test.
+
+---
+
+## 🔌 What Breaks Without Switch
+
+> The judges ask: *"Would this project stop working without Switch?"* — **Yes.**
+
+| Remove Switch | IDEAForge loses |
+|---|---|
+| No shared room | Agents can't @mention each other — delegation becomes invisible |
+| No room instructions | Epistemic taxonomy (SOURCE_BACKED / ASSUMPTION / UNKNOWN) isn't enforced |
+| No room context | @red-team can't be isolated from @evidence-scout for blind review |
+| No addressing policies | Anyone could invoke the approval-capable `@forge-lead` — permissions collapse |
+| No human-in-room | The scope gate and approval are private to one CLI session, not a shared decision |
+| No document attach | Source pack isn't available to all agents; @evidence-scout can't cite shared docs |
+
+**Switch is not a delivery channel. It's where the collaboration happens.**
+
+---
+
 ## ⚡ Clone & Reproduce in 60 Seconds
 
 ```powershell
@@ -29,6 +63,7 @@ python -m ideaforge serve           # Web Studio at http://127.0.0.1:8765
 ## 🏆 Hackathon Track Fit
 - **Primary Track:** **Track 02 — Best Personal or Creative Workflow** (Flip the Switch Hackathon, Nov 4–7 2026)
 - **Why Track 02:** Turning an invention concept into a testable prototype is a deeply personal creative engineering journey. Rather than acting as a generic chatbot that produces ungrounded text, IDEAForge structures the maker's notebook, attacks risky assumptions with adversarial review, and produces an executable **Experiment Kit** to de-risk the idea before hardware fabrication.
+- **Side Tracks:** Code with Wispr ($500) · Best Blog (AirPods 5) · #HowISwitch (Logitech keyboard)
 
 ---
 
